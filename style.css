@@ -1,0 +1,2160 @@
+/* ============================================================
+   217 Products — ukiyo-e maximalist edition
+   Bright washi + sumi + vermilion + gold. Layered 3D-parallax
+   hero, immersive image sections, HubX scroll mechanics, brush
+   217 identity and cel-shaded anime illustrations.
+   ============================================================ */
+
+/* ---------- self-hosted fonts (subset to the site's glyphs, preloaded) ----------
+   Served from our own origin like the pros do: no third-party connection, no
+   two-step CSS->woff2 fetch, headline font ready at first paint. Manrope is a
+   single variable file covering 400-800.
+   THE ?v= ON THESE URLS IS NOT DECORATION. style.css carries its own cache-bust
+   in the <link>, but that does nothing for the font files it points at — they
+   are their own URLs, cached by GitHub Pages for ten minutes and by the browser
+   for far longer. Bump this token whenever the subsets are regenerated, and
+   bump it in the two preload hrefs in both HTML files in the same commit: a
+   preload whose URL differs from the @font-face URL by one byte downloads the
+   file a second time instead of serving it.
+   v2 = rebuilt from the upstream families with Turkish letters composed in
+   (Shippori ships none: no s-cedilla, no g-breve, no dotted-I) and with the six
+   kanji/kana the previous subset had dropped. Smaller than v1 despite that,
+   because the old subset still carried glyphs from retired copy. */
+@font-face {
+  font-family: "Manrope";
+  src: url("assets/fonts/manrope-var.woff2?v=3") format("woff2");
+  font-weight: 400 800; font-style: normal; font-display: swap;
+}
+@font-face { font-family: "Shippori Mincho"; src: url("assets/fonts/shippori-500.woff2?v=3") format("woff2"); font-weight: 400 500; font-style: normal; font-display: swap; }
+/* v=3: the 700 cut carries 弐 (U+5F10) for the second shelf seal, merged in
+   from the full face as a single glyph — re-subsetting from the source would
+   drop the Turkish letters this file was hand-built to hold. */
+@font-face { font-family: "Shippori Mincho"; src: url("assets/fonts/shippori-700.woff2?v=4") format("woff2"); font-weight: 700; font-style: normal; font-display: swap; }
+@font-face { font-family: "Shippori Mincho"; src: url("assets/fonts/shippori-800.woff2?v=3") format("woff2"); font-weight: 800; font-style: normal; font-display: swap; }
+
+:root {
+  /* ANDROID'S AUTO DARK THEME IS AN ALGORITHM, AND IT EATS THIS PAGE.
+     Chrome on Android can force-invert any site that has not said which schemes
+     it supports. Measured with the real flag (--force-dark-mode
+     --enable-features=WebContentsForceDark, not a CDP media override), Pixel 7
+     UA, live site: mean page brightness fell from 215.4 to 43.8 out of 255 —
+     the mountain sinks into the ground, the mist disappears, the dot grid turns
+     to polka dots. The ukiyo-e sheet IS the design; there is no dark variant of
+     it to fall back to, so the honest declaration is that this page has one
+     scheme. `only light` is the strong form: it opts out of the forced
+     inversion rather than merely stating a preference. */
+  color-scheme: only light;
+  /* SUMI ON WHITE. The sheet was a warm cream (#F3ECDC) with a warm-black ink
+     and a gilt third colour, which is what made the page read yellow — the
+     bars, the plate and every scrim carried the same cast. It is now a true
+     neutral: white paper, neutral black ink, and ONE accent, the seal red.
+     That is the classic hanko palette and it is what the reference runs too.
+     Gold is gone as a colour but its TOKENS stay, repointed at the accent, so
+     every rule that reached for it follows without being rewritten. */
+  --paper: #FFFFFF;
+  --paper-2: #F4F4F3;
+  --paper-3: #E8E8E7;
+  /* THE OPENING SHEET. Measured off the reference, not chosen: its hero runs
+     rgb(240,240,243) with the nav capsule one step lighter at rgb(248,248,251),
+     and that half-step is the whole reason its chrome reads at all. Pure white
+     gives a floating capsule nothing to float above — which is exactly why our
+     nav needed an inset ring to be seen. The deck below stays --paper: the
+     six sumi illustrations are melted into a white ground, so moving the whole
+     page off white would ring each of them in a pale halo. */
+  --hero-paper: #F0F0F3;
+  --ink: #111111;
+  --ink-2: #575757;
+  --ink-dim: #8C8C8C;
+  --vermilion: #E0402A;
+  --vermilion-deep: #BF3218;
+  /* THE SAME RED, LIT FOR THE INK WALL. The ramp is indexed by GROUND, never by
+     size or by section: --vermilion on paper, --vermilion-deep as a field under
+     white text, --vermilion-ink as a mark on the #111 wall of the shelf.
+     It exists because --vermilion measures 4.44:1 there and small text needs
+     4.5 — it misses by 1.4% of luminance, so this is the smallest lift that
+     clears it (4.73:1), not a new colour. Hue 30.9 against --vermilion's 31.1;
+     lightness +0.014 in OKLCH. That restraint is the whole point: the "orange"
+     reading on this wall came from LIGHTNESS, not hue — you cannot raise L on
+     this hue without the green channel following, and the colour this replaces
+     had ridden it to G=112 against the seal's 64. This sits at 75.
+     Chroma 0.190 leaves 0.052 of gamut headroom (R=225, thirty counts off
+     clipping) so it stays put on a P3 display instead of going fluorescent. */
+  --vermilion-ink: #E14B36;
+  --accent-ink: #A82C15;
+  /* the print's keyline — ink, not gilt (overridden to a white keyline where it
+     hangs on the dark shelf) */
+  --gold: #111111;
+  /* the accent words and brush rules that used to be gold: now the seal red,
+     5.7:1 on white */
+  --gold-deep: #BF3218;
+  /* the darker step, for accent text sitting on artwork — 6.9:1 */
+  --gold-ink: #A82C15;
+  --sage: #BF3218;
+  /* Measured against the reference: it runs a 1361px content band inside a
+     flat 32px page inset. Ours was 1220 inside 72 — 141px narrower and more
+     than double the margin, which is most of why the page read small on a wide
+     screen. Everything sits on a wider band now and the type scale follows. */
+  --pad: clamp(20px, 3vw, 46px);
+  --maxw: 1360px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html.lenis, html.lenis body { height: auto; }
+.lenis.lenis-smooth { scroll-behavior: auto !important; }
+
+html { background: var(--paper); }
+body {
+  font-family: "Manrope", system-ui, sans-serif;
+  font-weight: 400; line-height: 1.65; color: var(--ink);
+  background: var(--paper);
+  overflow-x: hidden; overflow-x: clip; -webkit-font-smoothing: antialiased;
+}
+
+/* First-load smoothing: below-fold entrance elements start hidden (with JS) so
+   they don't flash in before their scroll reveal. The HERO is deliberately NOT
+   gated here — its entrance is a pure CSS animation further down, which plays
+   with the very first paint and never waits on a CDN script. Reduced-motion
+   skips the hiding entirely. */
+@media (prefers-reduced-motion: no-preference) {
+  .js .rise { opacity: 0; }
+  .js .brighten { color: #767676; }
+}
+/* the deep step, not the bright one: white on --vermilion measures 4.25:1 and
+   selected text is body text, which needs 4.5. --vermilion-deep gives 5.70:1.
+   Same reasoning the filled button and the 404 page already follow. */
+::selection { background: var(--vermilion-deep); color: var(--paper); }
+a { color: inherit; text-decoration: none; }
+:focus-visible { outline: 2px solid var(--vermilion); outline-offset: 4px; border-radius: 2px; }
+/* Scroll targets get tabindex="-1" from the anchor handler so focus can actually
+   land on them; that makes them match :focus-visible on the click that put it
+   there, and a ring around a whole section reads as an error. Real controls keep
+   theirs — this is scoped to the section/main elements only. */
+main:focus, main:focus-visible, section:focus, section:focus-visible { outline: none; }
+
+/* reading-progress ink line — a thin vermilion brush stroke along the top */
+.scroll-ink {
+  position: fixed; top: 0; left: 0; right: 0; height: 3px; z-index: 90;
+  background: linear-gradient(90deg, var(--vermilion), var(--vermilion-deep));
+  transform: scaleX(0); transform-origin: left center; pointer-events: none;
+}
+
+/* keyboard skip link — hidden until focused */
+.skip-link {
+  position: fixed; top: 10px; left: 10px; z-index: 100;
+  /* flex + min-height rather than more padding: measured at 43px tall, one short
+     of the 44 a finger needs, and the type is where it should be already */
+  display: inline-flex; align-items: center; min-height: 44px;
+  padding: 10px 18px; border-radius: 8px;
+  background: var(--ink); color: var(--paper); font-size: 14px; font-weight: 600;
+  transform: translateY(-160%); transition: transform 0.2s ease;
+}
+.skip-link:focus { transform: translateY(0); outline: 2px solid var(--vermilion); outline-offset: 3px; }
+img { max-width: 100%; height: auto; display: block; }
+/* readable to a screen reader, invisible on screen — used for the label on the
+   stretched hit area over a shelf slot, whose visible text sits underneath it */
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap;
+}
+
+.display { font-family: "Shippori Mincho", Georgia, serif; font-weight: 700; letter-spacing: 0.004em; text-wrap: balance; }
+/* Desktop-only line break: headlines break where the sentence does on wide
+   screens, and wrap naturally on phones where a forced break would overflow. */
+.br-lg { display: none; }
+@media (min-width: 760px) { .br-lg { display: inline; } }
+.gold { color: var(--gold-deep); }
+
+/* ---------- nav ---------- */
+.nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 40;
+  display: flex; justify-content: space-between; align-items: center;
+  height: 56px; padding: 0 var(--pad);
+  /* mobile keeps the washi ribbon; the desktop pill below drops it */
+  background: linear-gradient(180deg, rgba(255,255,255,0.95), rgba(255,255,255,0.7) 62%, rgba(255,255,255,0));
+  /* paint-only transitions. Height is NOT animated: it would run a layout pass
+     on every frame, and it fired exactly as scrolling began — the worst
+     possible moment. The bar keeps one height and reads its state through
+     colour, shadow and a scaled mark instead. */
+  transition: background 0.35s ease, box-shadow 0.35s ease;
+}
+/* horizontal brush wordmark (1.87:1) — scaled, never resized.
+   FIXED height, not a vw clamp. Measured on the reference at two widths: its
+   wordmark is 99x41 at 1440 AND at 1905 — the chrome does not grow with the
+   viewport, only the content band does. Ours was on a 3.4vw clamp, so at 1500
+   it was already 51px and kept climbing to 66; that is where "too big" came
+   from. 41px is the reference's exact height. */
+.brand-mark { width: auto; height: 41px; transform-origin: left center; transition: transform 0.3s ease; }
+/* The wordmark is the opening's signature, not a permanent fixture: once the
+   ink has taken the page it steps away and leaves the capsule and the rail to
+   carry the header. Opacity and transform only — no display switch, or the
+   focus order would change under a keyboard user mid-scroll. */
+/* `visibility` is in the transition list with a 0.45s delay, so it flips only
+   AFTER the fade finishes — the exit still animates, but once gone the mark is
+   out of the tab order and out of the accessibility tree. opacity:0 alone left
+   an invisible link that Enter still followed; pointer-events only stops a
+   mouse, never a keyboard. */
+.brand { transition: opacity 0.45s ease, transform 0.45s ease, visibility 0s linear 0s; }
+html.past-hero .brand {
+  opacity: 0; transform: translateY(-14px); pointer-events: none;
+  visibility: hidden; transition: opacity 0.45s ease, transform 0.45s ease, visibility 0s linear 0.45s;
+}
+/* once you scroll, the bar settles into a solid washi ribbon: paper fill, ink
+   hairline underneath, mark drawn back — quiet until you need it */
+.nav-links { display: flex; gap: clamp(12px, 2vw, 30px); align-items: center; }
+.nav-links a { position: relative; font-size: 14px; font-weight: 600; letter-spacing: 0.03em; color: var(--ink-2); transition: color 0.25s; }
+.nav-links a:hover { color: var(--ink); }
+/* vermilion ink stroke sweeps under links on hover */
+.nav-links a::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: -5px; height: 2px;
+  background: var(--vermilion); border-radius: 2px;
+  transform: scaleX(0); transform-origin: left center;
+  transition: transform 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.nav-links a:hover::after, .nav-links a:focus-visible::after { transform: scaleX(1); }
+/* hanko-seal CTA: a small vermilion stamp instead of a plain text link */
+.nav-cta {
+  /* vermilion-deep, not vermilion: white at 13px needs 4.5:1 and the brighter
+     red only gives 3.99 — the deep tone reads 5.3:1 and still stamps red */
+  color: #fff !important; background: var(--vermilion-deep);
+  padding: 8px 15px; border-radius: 9px;
+  box-shadow: 0 4px 14px rgba(191,50,24,0.28);
+  transition: background 0.25s ease, transform 0.25s ease;
+}
+.nav-cta:hover { background: #A02611; transform: translateY(-1px); }
+.nav-links .nav-cta::after { display: none; }
+.nav-alt { color: var(--gold-ink) !important; }
+
+/* ---------- desktop: the bar becomes a floating washi seal ----------
+   The header stops being a strip across the top. The wordmark stands alone
+   top-left and the links ride in one rounded paper capsule top-right, lifted
+   off the page by two very soft shadows. No backdrop-filter anywhere — it
+   repaints every frame and this site is tuned for scroll smoothness. */
+/* EVERY NUMBER IN HERE IS FIXED, NOT FLUID, and that is the point. Measured on
+   the reference at 1440 and again at 1905: capsule 528.5x74, links 14px/600,
+   button 50 tall, page inset 32, top 24 — identical at both widths. Only its
+   CONTENT band is fluid. Ours was on vw clamps, so the chrome kept growing with
+   the monitor and by 1500px the capsule was 88 tall against its 74. */
+@media (min-width: 901px) {
+  .nav {
+    height: auto; align-items: center;
+    /* 24 top / 32 side, the reference's own inset — not --pad, which is the
+       CONTENT band's inset and runs to 46 on a wide screen */
+    padding: 24px 32px;
+    background: none; box-shadow: none;
+    /* The header is only a positioner now. Left as-is it is a full-width
+       invisible 115px shield across a FIXED layer, so it eats clicks down the
+       whole page — the Play Store button dies whenever it passes under it. */
+    pointer-events: none;
+  }
+  .brand, .nav-links { pointer-events: auto; }
+  .nav-links {
+    gap: 0;
+    /* 12 all round + a 24 lead-in; with a 50px button that is exactly 74 tall */
+    padding: 12px 12px 12px 24px;
+    border-radius: 999px;
+    background: #FFFFFF;
+    /* Heavier than the reference's 5%, and deliberately so. Its capsule floats
+       on tone alone — #F8F8FB on #F0F0F3 — with the shadow doing almost nothing.
+       Ours has to hold over two very different grounds: the tinted hero sheet at
+       the top and the black shelf of screen two underneath, and a whisper that
+       reads on one disappears on the other. Three throws: a wide soft one for
+       the lift, a tight one for the contact edge, and the hairline that closes
+       the capsule. */
+    box-shadow: 0 18px 48px rgba(17,17,26,0.20), 0 6px 18px rgba(17,17,26,0.13),
+                inset 0 0 0 1px rgba(17,17,17,0.08);
+  }
+  /* the seal CTA sets the row height; stretch hands it to every link, so each
+     one gets a 50px target instead of a 20px text box */
+  .nav-links a {
+    font-size: 14px;
+    display: inline-flex; align-items: center; align-self: stretch;
+    /* right-only padding, like the reference: the capsule's own 24px carries
+       the lead-in, so the links do not double it up on the left edge */
+    padding: 0 22px 0 0;
+  }
+  .nav-links .nav-cta {
+    padding: 0 24px; height: 50px; font-size: 14px;
+    display: inline-flex; align-items: center; border-radius: 999px;
+  }
+  .nav-links .nav-alt { padding: 0 0 0 18px; }
+  .nav-links a::after { left: 0; right: 22px; bottom: 14px; }
+  .nav-links .nav-alt::after { left: 18px; right: 0; }
+  /* Cancels the full-width ribbon on desktop. The capsule itself never
+     changes on scroll — the reference does not either. */
+  .nav.is-scrolled { background: none; box-shadow: none; }
+}
+/* toggle: three sumi-e brush strokes (三, HGF vector) that hand over to an X */
+.nav-toggle { display: none; position: relative; width: 48px; height: 48px; background: none; border: 0; padding: 0; cursor: pointer; align-items: center; justify-content: center; z-index: 60; }
+/* A BACKGROUND, NOT AN <img>, AND THE URL LIVES IN THE PHONE BLOCK ONLY.
+   The toggle is display:none above 900px, but `display:none` on an ancestor
+   does not stop the parser fetching an <img src>: measured on desktop at 1280px,
+   menu-brush.svg came down (10.6 KB gzipped) in the first request wave around
+   900ms, decoded to 178px wide, and was then painted into a 0x0 box. Pure loss,
+   on every desktop visit, in the critical path. `loading="lazy"` was measured
+   too and does NOT fix it. A CSS background declared inside the phone media
+   query is never even a candidate resource on a wide screen.
+   Sized explicitly because the box no longer comes from the file: 178x150 at
+   26px tall is 30.85px wide. */
+.toggle-brush { display: block; width: 30.9px; height: 26px; transition: opacity 0.25s ease, transform 0.32s cubic-bezier(0.22, 1, 0.36, 1); }
+.nav-toggle.is-open .toggle-brush { opacity: 0; transform: rotate(90deg) scale(0.55); }
+/* the X: two ink bars, hidden until the menu opens */
+.nav-toggle span { position: absolute; left: 50%; top: 50%; width: 24px; height: 2px; margin: -1px 0 0 -12px; background: var(--ink); border-radius: 2px; opacity: 0; transition: opacity 0.25s ease, transform 0.32s cubic-bezier(0.22, 1, 0.36, 1); }
+.nav-toggle span:nth-of-type(1) { transform: rotate(45deg) scale(0.4); }
+.nav-toggle span:nth-of-type(2) { transform: rotate(-45deg) scale(0.4); }
+.nav-toggle span:nth-of-type(3) { display: none; }
+.nav-toggle.is-open span:nth-of-type(1) { opacity: 1; transform: rotate(45deg) scale(1); }
+.nav-toggle.is-open span:nth-of-type(2) { opacity: 1; transform: rotate(-45deg) scale(1); }
+
+/* while the takeover menu is open, the page behind it must not scroll */
+html.menu-open, html.menu-open body { overflow: hidden; }
+
+@media (max-width: 900px) {
+  .nav-toggle { display: flex; }
+  /* the only place the brush file is ever named — see .toggle-brush above */
+  .toggle-brush { background: url("assets/menu-brush.svg?w=1") center / contain no-repeat; }
+  /* phones get the same floating language: no ribbon, just the mark and the
+     toggle each sitting on their own small washi seal */
+  /* pointer-events: none, EXACTLY as the desktop block does at 901px+ and for
+     exactly the same reason — the header is a FIXED full-width layer, so with
+     hit-testing on it is an invisible 81px shield lying across the top of every
+     screen of the page, eating clicks on whatever scrolls under it. The desktop
+     side had this fix and the mobile side never got it. Measured at 390x844:
+     .nav pointerEvents "auto", rect 390x81 at y 0, z-index 4. */
+  .nav { height: auto; padding: 12px var(--pad); background: none; box-shadow: none;
+         pointer-events: none; }
+  .brand, .nav-toggle, .nav-links { pointer-events: auto; }
+  .brand, .nav-toggle {
+    border-radius: 999px; background: #FFFFFF;
+    box-shadow: 0 16px 40px rgba(17,17,26,0.20), 0 5px 14px rgba(17,17,26,0.13),
+                inset 0 0 0 1px rgba(17,17,17,0.08);
+  }
+  .brand { padding: 8px 14px; }
+  /* while the menu is open the toggle is on the sheet, not on a disc */
+  .nav-toggle.is-open { background: none; box-shadow: none; }
+  /* full-screen washi takeover: big Shippori links with their kanji pairings,
+     staggered in; opacity-only (no transforms on ancestors = no fixed-position
+     traps, and cheap to composite) */
+  .nav-links {
+    position: fixed; inset: 0; width: 100%;
+    /* The drawer is exactly one screen tall, and on a phone held sideways one
+       screen is not enough: measured at 812x375, 667x375 and 740x360 the last
+       item (the language switch) ran 1-8px past the bottom edge, and
+       position:fixed with overflow visible left that part unreachable. It only
+       scrolls when it has to; where it fits, nothing changes. */
+    overflow-y: auto; overscroll-behavior: contain;
+    flex-direction: column; align-items: flex-start; justify-content: center;
+    gap: clamp(6px, 1.6vh, 16px);
+    padding: calc(var(--pad) + 40px) calc(var(--pad) + 8px) var(--pad);
+    background:
+      radial-gradient(120% 90% at 88% -12%, rgba(224,64,42,0.08), transparent 55%),
+      radial-gradient(90% 70% at -10% 110%, rgba(17,17,17,0.05), transparent 50%),
+      var(--paper);
+    opacity: 0; visibility: hidden; pointer-events: none;
+    transition: opacity 0.4s ease, visibility 0s linear 0.4s;
+    z-index: 50;
+  }
+  .nav-links.open { opacity: 1; visibility: visible; pointer-events: auto; transition: opacity 0.4s ease; }
+  /* faint vertical studio signature, like the hero's tate columns */
+  .nav-links::before {
+    content: "独立の製品工房"; position: absolute; right: 20px; bottom: 26px;
+    writing-mode: vertical-rl; font-family: "Shippori Mincho", serif;
+    font-size: 12px; letter-spacing: 0.4em; color: var(--ink-2); opacity: 0.45;
+    pointer-events: none;
+  }
+  .nav-links a {
+    font-family: "Shippori Mincho", Georgia, serif;
+    font-size: clamp(30px, 7.6vw, 42px); font-weight: 700; letter-spacing: 0;
+    color: var(--ink); display: flex; align-items: center; gap: 16px;
+    min-height: 56px; padding: 4px 0;
+    opacity: 0; transform: translateY(16px);
+    transition: opacity 0.45s ease, transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .nav-links.open a { opacity: 1; transform: translateY(0); }
+  .nav-links.open a:nth-child(1) { transition-delay: 0.07s; }
+  .nav-links.open a:nth-child(2) { transition-delay: 0.13s; }
+  .nav-links.open a:nth-child(3) { transition-delay: 0.19s; }
+  .nav-links.open a:nth-child(4) { transition-delay: 0.25s; }
+  .nav-links.open a:nth-child(5) { transition-delay: 0.33s; }
+  .nav-links.open a:nth-child(6) { transition-delay: 0.39s; }
+  /* kanji pairings — the site's bilingual signature, small and vermilion */
+  .nav-links a:nth-child(1)::before { content: "製品"; }
+  .nav-links a:nth-child(2)::before { content: "職人"; }
+  .nav-links a:nth-child(3)::before { content: "工房"; }
+  .nav-links a:nth-child(4)::before { content: "道"; }
+  .nav-links a:nth-child(-n+4)::before {
+    font-size: 13px; font-weight: 600; letter-spacing: 0.2em;
+    color: var(--vermilion); opacity: 0.8; min-width: 44px;
+  }
+  /* the hanko CTA + language switch sit apart from the big links */
+  .nav-links .nav-cta {
+    font-family: "Manrope", system-ui, sans-serif; font-size: 16px;
+    padding: 14px 28px; border-radius: 12px; margin-top: clamp(10px, 2.4vh, 22px);
+    min-height: 0;
+  }
+  .nav-links .nav-alt {
+    font-family: "Manrope", system-ui, sans-serif; font-size: 13px;
+    font-weight: 700; letter-spacing: 0.3em; min-height: 44px;
+  }
+}
+
+/* ---------- shared ---------- */
+main { position: relative; z-index: 2; }
+/* The sliding deck. Sections are centred at max-width, so their own background
+   would leave the hero showing down both margins — the deck needs ONE
+   full-bleed sheet of paper behind everything after the hero. The marquee is
+   the first block over the hero, so it carries that sheet and extends it all
+   the way down; later sections paint their own art on top of it. */
+main > *:not(.hero-stage) { position: relative; z-index: 2; }
+/* One full-bleed sheet of paper covering everything below the hero. It has to
+   live on `main`: the marquee (the first block over the hero) is
+   `overflow: hidden`, which would clip any backdrop drawn inside it. */
+main::before {
+  content: ""; position: absolute; z-index: 1;
+  left: 0; right: 0; top: var(--hero-h, 100svh); bottom: 0;
+  background: var(--paper); pointer-events: none;
+}
+/* Washi fibre — on the deck sheet only, never on the hero. The hero is a
+   painted scene that already carries brush texture; grain is the cure for a
+   FLAT panel, and doubling texture on texture just muddies it. No blend mode
+   and no fixed attachment either: both force a backdrop read-back every
+   frame, which is exactly what the blur further down was removed for. */
+main::after {
+  content: ""; position: absolute; z-index: 1; pointer-events: none;
+  left: 0; right: 0; top: var(--hero-h, 100svh); bottom: 0;
+  background-image: url("data:image/svg+xml,<svg%20xmlns='http%3A//www.w3.org/2000/svg'%20width='180'%20height='180'><filter%20id='w'><feTurbulence%20type='fractalNoise'%20baseFrequency='0.9'%20numOctaves='3'%20stitchTiles='stitch'/><feColorMatrix%20type='saturate'%20values='0'/></filter><rect%20width='180'%20height='180'%20filter='url%28%23w%29'/></svg>");
+  background-size: 180px 180px; opacity: 0.035;
+}
+section { padding: clamp(96px, 15vh, 210px) var(--pad); position: relative; }
+.eyebrow { font-family: "Manrope", "Shippori Mincho", system-ui, sans-serif; font-size: 13px; font-weight: 700; letter-spacing: 0.3em; color: var(--accent-ink); }
+/* `.big` had exactly one user, `.final .display.big`, and both the desktop rule
+   for `.final .display` and the phone rule for `.final .display.big` out-rank it
+   at every width — measured 96px at 1440 where this would have given 120.96.
+   The size lives with the section that uses it; this shorthand only looked like
+   a knob. */
+
+/* ---------- right rail ----------
+   A small washi tab clipped to the edge of the sheet, carrying the studio
+   signature down the margin the way a print carries its seal. One rail, not
+   two: a second column on the left only crowded the type. */
+/* Fixed, not absolute, and no longer a child of the hero — it has to be there
+   on every screen, the way the reference's honours tab is. The wordmark does
+   the opposite: it belongs to the opening and leaves with it. */
+.tate {
+  position: fixed; right: 0; top: 50%; z-index: 41;
+  transform: translateY(-50%);
+  display: flex; flex-direction: column; align-items: center; gap: 16px;
+  /* The reference's rail is 53 x 176 at every viewport — an honours tab clipped
+     to the edge of the sheet. Fixed here for the same reason the capsule is:
+     a vw clamp made it grow into a slab on a wide monitor. */
+  width: 53px; padding: 20px 0;
+  background: #FFFFFF;
+  border-radius: 12px 0 0 12px;
+  /* Thrown to the LEFT, because the rail is hard against the right edge and a
+     centred shadow would spill off the screen and read as nothing. Same weight
+     as the nav capsule so the two pieces of chrome sit at one height above the
+     sheet — matched pairs are what make a floating chrome read as a system
+     rather than as two stickers. */
+  box-shadow: -18px 14px 48px rgba(17,17,26,0.20), -6px 5px 18px rgba(17,17,26,0.13),
+              inset 0 0 0 1px rgba(17,17,17,0.08);
+}
+/* the seal reads across, the place name reads down — the reference's rail is
+   built the same way, a mark stacked over a vertical label */
+.tate .seal {
+  font-family: "Shippori Mincho", serif; font-size: 15px; font-weight: 700;
+  /* 15px, and nowrap. Three glyphs at 18px measure 54px inside a 53px rail, so
+     the seal broke across two lines and read as damaged type.
+     The deep red step, not the bright one: at this size a 4.25:1 red would fall
+     under AA on white. */
+  letter-spacing: 0; white-space: nowrap;
+  color: var(--accent-ink); line-height: 1;
+}
+.tate .tate-t {
+  writing-mode: vertical-rl; font-family: "Manrope", system-ui, sans-serif;
+  font-size: 12px; font-weight: 700; letter-spacing: 0.28em; color: var(--ink-2);
+}
+@media (max-width: 900px) { .tate { display: none; } }
+
+
+/* ============================================================
+   1 · HERO — one sentence on a sheet of paper
+   ------------------------------------------------------------
+   Screen one carries a single idea and nothing else: no kicker, no
+   sub-paragraph, no buttons, no scroll cue. THERE IS NO LANDSCAPE. Five
+   revisions went into fitting a painted horizon, a rising sun, a mist band and
+   a two-line sentence into one screen, and every one of them ended with ink
+   cutting through the type. The sheet is flat now, the way the reference's is:
+   a tinted ground, a ruled lattice, film grain, and one vermilion circle. All
+   of the readability patches that plate needed — three text-shadows, a radial
+   wash, a scrim, a foot mist — went with it.
+   Sticky, not pinned: the hero parks and the page slides over it, so GSAP
+   never re-parents it into a pin-spacer and restarts its entrance.
+   ============================================================ */
+.hero {
+  position: sticky; top: 0; z-index: 0; min-height: 100svh;
+  /* THE ADDRESS-BAR BAND. svh is the height with the mobile address bar SHOWN;
+     once it retracts the screen grows to lvh, the sticky hero stays at 100svh,
+     and the strip between the two showed whatever sits behind — the page's
+     #FFFFFF against the hero's #F0F0F3. Measured in exact iPhone 14 geometry
+     (hero 754px in an 844px screen): a hard-edged 90px band under the foot
+     line. svh is still right — dvh would drag the bottom-anchored headline up
+     and down with the bar — so the fix is paint, not size: a zero-blur,
+     zero-spread shadow extends the hero's own paper 16svh down, more than the
+     lvh/svh gap on any phone. Static; no animation or transition, so it does
+     not touch the pin rule, and it composites with the hero it belongs to. */
+  box-shadow: 0 16svh 0 0 var(--hero-paper);
+  display: flex; flex-direction: column; align-items: center; justify-content: flex-end;
+  text-align: center;
+  /* The sentence is bottom-anchored, not centred. A headline parked in the
+     middle of the screen is the safe answer everyone reaches for; dropping it
+     low leaves the top of the sheet for the disc — and it is what the reference
+     does too, its block sitting at 377-742 of a 900 screen. The bottom padding
+     holds it off the foot line. */
+  padding: clamp(96px, 13vh, 172px) var(--pad) min(clamp(126px, 17vh, 200px), max(10.63vw, 108.3px));
+  /* THE SECOND TERM KEEPS THE SENTENCE IN THE MIST, NOT ON THE MOUNTAIN. The
+     plate is sized off the WIDTH (max(106%, 1080px) at 2.464:1) but 17vh is
+     height, so in a window taller than the reference the sentence climbed into
+     the painting: at 1140x1080 or a half-screen 960x1040 the first letter sat on
+     the black ridge and half of it went into the ink (measured on 124 window
+     sizes, 860-1540px wide). max(10.63vw, 108.3px) is 24.7% of the plate's own
+     height — exactly where 17vh puts the sentence at 1440x900 — so a tall window
+     now keeps the reference composition, and min() leaves every window that was
+     already clear (the reference, wider, shorter) exactly as it was. The foot
+     line keeps 40px+ at the narrowest tall window. */
+  /* The reference's exact sheet, and it is a tint rather than white for a
+     reason that shows up two elements away: the nav capsule floats because it
+     is a half-step LIGHTER than what it floats over. On pure white that
+     capsule had to be drawn with an inset ring to exist at all. */
+  background: var(--hero-paper);
+  /* NOT overflow:hidden — the disc has to be able to grow past the hero. */
+}
+
+/* ---------- the hero's own scroll ----------
+   The hero is sticky and the deck slides over it, which means the dark shelf of
+   screen two starts climbing on the very first pixel of scroll. This is empty
+   scroll that belongs to the hero: nothing renders in it — the parked hero
+   shows through — so the disc gets its whole ride before the next section is
+   allowed to reach the screen.
+   THE TWO NUMBERS ARE A PAIR. The shelf's top edge reaches the bottom of the
+   screen at exactly this height of scroll; the disc finishes covering at
+   INK_RIDE (main.js) of a viewport. Keep this the larger of the two or the
+   shelf arrives over a page that has not gone black yet, which reads as the
+   next section interrupting the first. 0.68 ride vs 0.76 run: an 8% cushion. */
+.hero-run { height: 76svh; pointer-events: none; }
+@supports not (height: 100svh) { .hero-run { height: 76vh; } }
+/* With no arc and no flood there is nothing for this scroll to carry, and 684px
+   of empty page is not restraint — it is a dead screen the visitor has to drag
+   past to reach the shelf. */
+.no-motion .hero-run { height: 0; }
+@media (prefers-reduced-motion: reduce) { .hero-run { height: 0; } }
+/* ---------- the stage: the hero's sticky range ----------
+   THE HERO USED TO BE STICKY FOR THE WHOLE OF main, and that was the stutter.
+   Parked at top 0 behind every section, it stayed on screen for the full
+   9,000px of the deck — covered, never seen, and still composited under every
+   frame: the sheet, the plate, the grain overlay and a flooded disc scaled to
+   the size of the window. Measured in a real window on a 165 Hz laptop screen
+   driven by an integrated GPU (where Chrome draws by default even when a
+   discrete card is fitted): every frame from the shelf to the footer took two
+   vsyncs (12.1ms, 82 fps) with the GPU main thread ~83% busy, and hiding the
+   hero alone put the same scroll back at 6.1ms.
+   The stage is the hero plus its run, so `sticky` parks it for exactly the ride
+   and no further. Past the run it scrolls away with the deck — by then the
+   flood has turned it solid black (it completes at INK_RIDE 0.68 of a
+   viewport, the run is 0.76) and the shelf rising under it is the same black
+   wall, so black leaves over black and nothing on screen changes. The stage has
+   no position or z-index of its own (it is excluded from the rule above), so
+   the hero keeps its z-index 0 in main's stacking context exactly as before.
+   With no motion the run is 0, so the stage is the hero alone and it scrolls
+   off like any block instead of being covered in place. */
+.hero-stage { display: block; }
+
+/* ---------- the deck states its own sheet ----------
+   (Written when the hero was sticky for the whole of main; it is now parked
+   only for its own stage, see .hero-stage. The sheets stay: they are what the
+   sections are drawn on, and on the shelf they are what the wall sits over.)
+   THE HERO IS STICKY FOR THE WHOLE OF main. Its box never leaves the top of the
+   screen, which means its sheet is painting behind every section below it, all
+   the way to the footer — and every one of those sections was transparent.
+   That was invisible for as long as the hero was #FFFFFF and the body was
+   #FFFFFF: two identical whites stacked. The moment the hero took the
+   reference's tint the whole deck started standing on grey, and the six sumi
+   illustrations are melted into a WHITE ground, so each of them would have
+   picked up a pale rectangular halo. Measured, not guessed: elementsFromPoint
+   at the middle of the statement section returns [statement, hero, main, body].
+   `.products` needs it too. Its dark shelf is a ::before inset
+   `0 -760px 0 680px` — it only covers from the shelf's left edge rightward, and
+   the column to the left of that is bare section.
+   Not on `main`: `.hero-run` is deliberately transparent so the flooding disc
+   shows through it, and a background there would be painted under the hero
+   rather than over it — the run would go white and swallow the flood. */
+.products, .statement, .craft, .studio, .process, .final, .foot {
+  background-color: var(--paper);
+}
+
+/* ---------- the print plate ----------
+   ONE painted landscape, alpha-keyed: paper transparent, every grey a partial
+   alpha of the same black. That is what lets the sun live BEHIND the whole
+   picture, which is the only place a sun can be — the version that put it
+   between a near ridge and a far range read as a sun nearer than the mountains
+   behind it, which is the one thing it can never be.
+   CROP AND PROPORTION ARE SOLVED, NOT CHOSEN. The drawing was placed by search:
+   8% off its left, 12% of empty sky off its top, giving 2.464:1. Across four
+   screen shapes (1425x900, 1920x1080, 1366x768, 1600x760) that puts the worst
+   letter-sized patch under either headline line, and under the foot rule, at
+   8.5:1 against the type — nearly double AA — while leaving 12% of bare paper
+   above the peak so nothing reads as cut by the frame. Every earlier attempt
+   failed here: the last one put the word "En" on 0.881 alpha ink, 1.35:1. */
+.hero-ground {
+  /* NO z-index here, deliberately. A z-index would make this a stacking context
+     and trap the sun inside it — and the sun has to be BELOW the ridge while it
+     rises and ABOVE the sentence once it floods, which it can only do if its
+     z-index is read against the hero, not against this box. */
+  position: absolute; inset: 0;
+  overflow: hidden; pointer-events: none;
+}
+.hz {
+  position: absolute; left: 50%; bottom: 0;
+  /* a plain percentage starves the plate on a phone (100% of 390px leaves a
+     75px sliver), so the width takes a floor in px */
+  width: max(106%, 1080px); max-width: none; height: auto;
+  /* CENTRED BY MARGIN, NOT BY TRANSFORM, and that is a bug class closed rather
+     than a style preference. With translateX(-50%) the centring lived in the
+     transform — the same property GSAP writes for the pointer parallax — and
+     GSAP reads a computed matrix, not the percentage that produced it. It
+     recorded x = -897px and added the pointer offset to that, walking half the
+     horizon off screen on the first mouse move. A negative margin is layout,
+     so the transform is left holding nothing but the parallax, and
+     `offsetLeft` reports where the plate truly is. */
+  margin-left: calc(max(106%, 1080px) / -2);
+  --o: 1; opacity: var(--o);
+  /* NO will-change, and the grain is why. A plate forced onto a layer of its
+     own also forces the washi grain above it (::after, z 4) onto one — a second
+     full-window sheet blended on every frame of the ride. Measured at glide
+     speed (40px a frame, 165 Hz, integrated GPU), that sheet alone was the
+     difference between 7.0% and 2.8% late frames; a flat tint in its place cost
+     the same, so it is the extra layer, not the noise. Without the hint the
+     plate, the grain, the specks and the type are drawn as one layer (4.5%).
+     Nothing is lost for the motion: the opening fade is a Web Animation, which
+     Chrome composites by itself while it runs, and GSAP's parallax tweens run
+     on translate3d, which does the same for as long as the pointer moves —
+     measured, circling the pointer over the hero stays at 0-1.3% late frames. */
+  z-index: 3;
+}
+/* PHONES: LEFT-ALIGNED, NOT CENTRED. The plate has a 1080px floor, so on a
+   390px screen it hangs 345px off each side — and the mountain lives in its
+   left fifth, which put it at screen x -291 to -140. The phone was showing the
+   empty middle of the picture and nothing else. Anchored left, the mountain and
+   the sun behind it are the first thing on the screen, which is the whole
+   point of the composition. */
+@media (max-width: 820px) {
+  /* AND SIZED OFF THE SHORT AXIS, because a px floor stops being a floor and
+     starts being a ceiling. Above 1018px the plate is 106vw, and on a landscape
+     desktop that lands it at 63% of the viewport height every time — that ratio
+     IS the composition: painting in the lower two thirds, sky above it for the
+     disc, the sentence sitting on the mist near its foot.
+     Below 1018px the width was pinned to a flat 1080px, so the painting stopped
+     scaling with the screen while the copy stayed anchored to the bottom of it.
+     Measured at 375x812: the plate came out 403px, only 49.6% of the screen, so
+     half the phone was bare paper AND the sentence landed 195px down the plate
+     (against 169 of 507 on a 1280 desktop) — i.e. further into the ink, which is
+     the "type tangled in the mountain" everyone sees on a phone. On an 820x1180
+     tablet the same 403px was 34% and the headline sat ABOVE the ridge.
+     Sizing the floor off svh restores the desktop ratio at any phone shape. The
+     px floor stays under it so a short screen can never starve the plate.
+     THE 1300px CEILING IS THE SUN, not the picture. The disc is parked at
+     data-sun-x = 0.220 of the PLATE's width, so a plate that grows with height
+     walks it rightwards on a screen whose width did not change. Unbounded,
+     168svh on a tall narrow phone pushes the disc past the right edge and it
+     gets clipped; the cap holds it on screen at every width down to 320.
+     AND LIFTED OFF THE FLOOR. Bottom-glued, the painting put its fog in the
+     dead band under the headline and its sky over the whole top 40% of the
+     screen. The lift pins the plate's TOP at 19svh instead (tuned by eye on a
+     real phone: 22 read as low, 17 as crowding the nav) — the sky becomes a
+     constant band on every phone shape, because
+     bottom = 100svh − 19svh − plateH. The multiplier is
+     the drawing's own aspect (717/1920 = 0.37344), so the height term tracks
+     the width rule above it; change one, change the other. max(0px, …) lets
+     short screens (plate taller than 78svh) fall back to the old bottom
+     anchor instead of pushing the painting off the top.
+     THE MOVE IS LAYOUT, NOT TRANSFORM, deliberately: main.js reads the
+     plate's offset box to park the sun and register the skyline mask, so a
+     bottom offset carries the disc and the cut with it for free — a transform
+     would leave both registered to a box the picture no longer occupies. */
+  .hz {
+    left: 0; margin-left: 0;
+    width: max(106%, 1080px, min(168svh, 1300px));
+    bottom: max(0px, 81svh - max(106vw, 1080px, min(168svh, 1300px)) * 0.37344);
+  }
+  @supports not (height: 100svh) {
+    .hz {
+      width: max(106%, 1080px, min(168vh, 1300px));
+      bottom: max(0px, 81vh - max(106vw, 1080px, min(168vh, 1300px)) * 0.37344);
+    }
+  }
+  /* the sentence follows the painting up: off the raised fog line rather than
+     parked in the pit the lift opened. 16svh keeps the head's top on the last,
+     near-transparent band of the mist on common phones (596 against a 623
+     plate-bottom at 812) and just under it on tall ones. The desktop pair
+     (17vh) stays untouched above 820. */
+  .hero { padding-bottom: clamp(84px, 16svh, 168px); }
+  @supports not (height: 100svh) { .hero { padding-bottom: clamp(84px, 16vh, 168px); } }
+}
+
+/* ---------- the skyline cut ----------
+   THE MOUNTAIN CUTS THE DISC, not a line.
+   Two earlier attempts failed for the same reason. A painted band of paper laid
+   over the sun (`.sun-haze`) could only reach 81% opacity at the disc's lowest
+   point, and the missing 19% is the ink that kept showing under the range. A
+   gradient mask hid it completely but cut it along a STRAIGHT edge — horizontal,
+   and angling it would only have traded one straight edge for another, because
+   the thing doing the hiding is not a line: it is a painted ridge with a summit,
+   a shoulder and a flank.
+   So the mask IS the drawing. `sky-mask.webp` is the plate's own alpha,
+   inverted: opaque where the plate is paper, transparent where it is ink. The
+   disc is drawn in the sky and simply not drawn where the mountain is, along the
+   exact silhouette the brush made.
+   Masks travel with their element, which is why masking the SUN was never an
+   option — the cut would climb with it. This wrapper never moves; the disc
+   travels inside it.
+   The mask image carries two thirds of empty opaque space above the plate band,
+   because outside a no-repeat mask everything counts as hidden and the disc has
+   to keep rising past the top of the painting. main.js writes the size and
+   offset from the plate's own layout box, so the two stay registered on every
+   window shape.
+   The wrapper carries the z-index, not the sun: a mask makes a stacking context,
+   so a z-index on the child would be trapped inside it and the flood could never
+   climb over the sentence. */
+.sun-clip {
+  position: absolute; inset: 0; z-index: 1;
+  pointer-events: none;
+  -webkit-mask-image: url("assets/sky-mask.webp?s=2");
+          mask-image: url("assets/sky-mask.webp?s=2");
+  -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+  /* main.js overwrites both from the plate's box; these keep it sane until it does */
+  -webkit-mask-size: 106% auto; mask-size: 106% auto;
+  -webkit-mask-position: 50% 100%; mask-position: 50% 100%;
+}
+/* Once the disc has cleared the peak there is nothing left to hide it and it
+   has to be able to cover the page, so the cut is lifted at the same moment the
+   layer goes over everything. */
+html.sun-up .sun-clip {
+  z-index: 6;
+  -webkit-mask-image: none; mask-image: none;
+}
+
+/* ---------- the sun ----------
+   BEHIND the landscape, under the plate's z 3 — that single fact is the whole
+   depth fix. It makes the sun the furthest thing in the scene, which is the only
+   thing a sun can be, and it means the painting never has to be altered to
+   accommodate it: no squeezing, no lightening, no moving the sentence.
+   It rises at the column the plate itself nominates, then arcs to the top of the
+   screen the way a sun actually travels — see main.js. */
+.sun {
+  position: absolute; top: 0; left: 0;
+  /* Tied to the SHORT axis as well as the wide one, and capped so it can never
+     outgrow the mountain it comes out from behind. */
+  width: clamp(120px, min(15vw, 22vh), 260px); aspect-ratio: 1;
+  transform-origin: 50% 50%; will-change: transform;
+  pointer-events: none; user-select: none;
+}
+/* SCOPED TO `.js`, so the watchdog can undo it. main.js measures the plate and
+   writes the disc's resting top/left before revealing it, which means an
+   unscoped `visibility: hidden` left the sun invisible FOREVER on any visit
+   where main.js 404s or throws — the one failure the six-second watchdog in
+   lang-redirect.js exists to cover, and the only hero gate it could not reach,
+   because it was not behind `.js`. */
+.js .sun { visibility: hidden; }
+.sun-ink, .sun-fill {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  border-radius: 50%;
+}
+/* the painted brush rim, recoloured to the seal red */
+.sun-ink { will-change: opacity; }
+/* The ink it becomes. Not a flat crossfade over the disc — a soft-edged black
+   that blooms out of the core and takes the circle from the inside. Inset past
+   the brush edge so that by the time it is full there is no vermilion rim left
+   to blow up into a red ring when the disc floods the page. */
+.sun-fill {
+  inset: -2%;
+  /* Black over red at half opacity is grey-red mud, which is what the flat
+     crossfade looked like. The burn is a THREE-STOP fire instead — ink at the
+     core, oxblood where it is still cooling, and a hot rim that never quite
+     goes out until the disc has taken the whole circle. All of it is baked into
+     one static gradient; only the scale animates, so it composites and costs
+     nothing per frame. */
+  background: radial-gradient(circle,
+    var(--ink) 62%, #3A0F08 78%, #8A1F10 92%, rgba(150,34,20,0) 100%);
+  opacity: 0; transform: scale(0.1); transform-origin: 50% 50%;
+  will-change: transform, opacity;
+}
+/* The swap that used to live here is on `.sun-clip` now — a mask makes a
+   stacking context, so the z-index has to be on the wrapper or it never leaves
+   it. See the note up there. */
+/* No JS, or reduced motion: no arc, no flood, and no sun tucked invisibly
+   behind a mountain either — the page is simply the landscape, as drawn. */
+.no-motion .sun { display: none; }
+/* Pre-reveal gate only: the fades themselves run on the Web Animations API in
+   lang-redirect.js, which survives DOM moves; a CSS animation here would
+   restart if anything ever re-parented the hero. Inline opacity beats this. */
+@media (prefers-reduced-motion: no-preference) {
+  .img-wait .hz { opacity: 0; }
+  /* THE DISC WAITS FOR ITS MOUNTAIN. sun-ink is 7 KB and preloaded high, the
+     mask is 9 KB, the plate is 59 KB and has to decode — so the disc was ready
+     first, and main.js showed it the moment it could place it, with no fade of
+     its own. Captured at 200ms on a phone: blank paper, no mountain, and a
+     bright vermilion crescent hanging in the middle of the screen, cut to a
+     silhouette that had not arrived yet. The whole point of the opening is that
+     the sun is BEHIND the range; for the first half second it was in front of
+     nothing at all. Gated on the same class the plate uses, so the disc cannot
+     appear before the painting whichever of the two finishes first, and
+     lang-redirect fades it on the plate's own curve. */
+  .img-wait .sun { opacity: 0; }
+}
+
+/* ---------- the lattice ----------
+   Read off the reference rather than invented: an 82-unit tile carrying one
+   9-unit SQUARE, drawn at a 30px repeat — so a 3.3px mark with 26.7px of air
+   around it, covering the whole sheet. Two things here are deliberate copies.
+   SQUARES, not the circles this used to draw: at three pixels a circle is a
+   soft smudge and a square is a mark, and the difference is the whole reason
+   the reference's field reads as ruled paper instead of as noise.
+   IT FADES BEFORE THE PAINTING. A ruled lattice and a wash landscape are two
+   textures competing for the same paper, and the picture has to win. The plate
+   is 2.464:1 anchored to the foot, so on a 900px screen its ink begins around
+   41% down — the mask is out by 34% and gone by 58%, which puts the dissolve in
+   the empty sky above the peak where there is nothing to interrupt. */
+.hero::before {
+  content: ""; position: absolute; inset: 0; z-index: 0; pointer-events: none;
+  background-image: url("data:image/svg+xml,<svg%20xmlns='http%3A//www.w3.org/2000/svg'%20width='82'%20height='82'><rect%20x='36'%20y='36'%20width='9'%20height='9'%20fill='%23D8D8DC'/></svg>");
+  background-size: 30px 30px;
+  -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 34%, transparent 58%);
+          mask-image: linear-gradient(180deg, #000 0%, #000 34%, transparent 58%);
+}
+/* Washi fibre, over the painting rather than under it — one tooth across the
+   whole sheet is what keeps the keyed ink from reading as a pasted-on PNG.
+   0.04, and it sits at z 4 so it covers the plate at 3. Plain opacity, no blend
+   mode — nothing for the compositor to read back per frame. */
+.hero::after {
+  content: ""; position: absolute; inset: 0; z-index: 4; pointer-events: none;
+  background-image: url("data:image/svg+xml,<svg%20xmlns='http%3A//www.w3.org/2000/svg'%20width='180'%20height='180'><filter%20id='w'><feTurbulence%20type='fractalNoise'%20baseFrequency='0.9'%20numOctaves='3'%20stitchTiles='stitch'/><feColorMatrix%20type='saturate'%20values='0'/></filter><rect%20width='180'%20height='180'%20filter='url%28%23w%29'/></svg>");
+  background-size: 180px 180px; opacity: 0.04;
+}
+
+/* ---------- hero entrance ----------
+   The synchronized 3s rise of the hero copy lives in lang-redirect.js as Web
+   Animations API calls (see the note on .pl above — CSS animations here would
+   restart when the pin re-parents the hero). The `.js .rise` rule further up
+   is only the pre-script no-flash gate. */
+/* nav fades in with the page open. OPACITY ONLY — a transform here (even a
+   finished fill-mode one) turns the fixed nav into the containing block for
+   the fixed mobile drawer inside it, which squashed the menu into the bar. */
+@media (prefers-reduced-motion: no-preference) {
+  .nav { animation: navIn 1.2s cubic-bezier(0.45, 0.05, 0.25, 1); }
+}
+@keyframes navIn { from { opacity: 0; } to { opacity: 1; } }
+
+/* ---------- the sentence ----------
+   Two lines, hand-broken. The words stay in normal inline flow (not flex
+   items) so a screen reader still reads one clean sentence — a flex container
+   would swallow the spaces between them. */
+.hero-head {
+  position: relative; z-index: 5; margin: 0;
+  font-family: "Shippori Mincho", Georgia, serif; font-weight: 800;
+  font-size: clamp(40px, 7.5vw, 112px); line-height: 1.05;
+  letter-spacing: -0.02em; text-wrap: balance;
+}
+.hero-line { display: block; }
+/* The accent word: light weight against the heavy carved ones, brushed, in
+   vermilion. A weight axis rather than a second typeface — Mincho has no true
+   italic, so a synthesised oblique of the 800 would just smear. */
+.hero-head em {
+  font-style: italic; font-weight: 500; color: var(--vermilion);
+  letter-spacing: -0.005em;
+}
+
+/* ---------- flying ink ----------
+   A handful of specks already on the sheet, the way a brush throws a few when
+   it is loaded. They are what keeps a mostly-empty panel from reading as an
+   unfinished page — the same job Funtown's scattered confetti does, in sumi.
+   Placed by hand, not looped: an even scatter looks generated. */
+.specks { position: absolute; inset: 0; z-index: 2; pointer-events: none; }
+/* No will-change here any more. These sixteen marks never move: the hint existed
+   for the ink-shake toy, which fell in with the physics engine that drove it, and
+   sixteen permanently composited layers is a real price for an animation that no
+   longer exists. */
+.specks i {
+  position: absolute; display: block; border-radius: 50%;
+  background: var(--ink); opacity: 0.13;
+}
+.specks i:nth-child(1)  { left: 8%;  top: 20%; width: 14px; height: 14px; opacity: 0.15; }
+.specks i:nth-child(2)  { left: 17%; top: 12%; width: 6px;  height: 6px;  opacity: 0.11; }
+.specks i:nth-child(3)  { left: 41%; top: 9%;  width: 9px;  height: 9px;  opacity: 0.10; }
+.specks i:nth-child(4)  { left: 71%; top: 19%; width: 6px;  height: 6px;  opacity: 0.34; }
+.specks i:nth-child(5)  { left: 88%; top: 32%; width: 12px; height: 12px; opacity: 0.09; }
+.specks i:nth-child(6)  { left: 12%; top: 46%; width: 8px;  height: 8px;  opacity: 0.13; }
+.specks i:nth-child(7)  { left: 25%; top: 58%; width: 5px;  height: 5px;  opacity: 0.12; }
+.specks i:nth-child(8)  { left: 62%; top: 61%; width: 9px;  height: 9px;  opacity: 0.10; }
+.specks i:nth-child(9)  { left: 33%; top: 27%; width: 7px;  height: 7px;  opacity: 0.12; }
+.specks i:nth-child(10) { left: 79%; top: 52%; width: 10px; height: 10px; opacity: 0.11; }
+.specks i:nth-child(11) { left: 5%;  top: 61%; width: 6px;  height: 6px;  opacity: 0.14; }
+.specks i:nth-child(12) { left: 55%; top: 16%; width: 5px;  height: 5px;  opacity: 0.10; }
+.specks i:nth-child(13) { left: 94%; top: 14%; width: 8px;  height: 8px;  opacity: 0.12; }
+.specks i:nth-child(14) { left: 47%; top: 55%; width: 11px; height: 11px; opacity: 0.09; }
+.specks i:nth-child(15) { left: 21%; top: 36%; width: 5px;  height: 5px;  opacity: 0.30; }
+.specks i:nth-child(16) { left: 84%; top: 66%; width: 7px;  height: 7px;  opacity: 0.13; }
+/* two specks in vermilion — the same trick as the seal: a couple of warm
+   points in a field of sumi, so the scatter reads as ours and not as dust */
+/* two vermilion and two gold among the sumi — when the whole scatter falls,
+   a monochrome pile reads as dirt; a couple of warm points read as ink */
+.specks i:nth-child(4), .specks i:nth-child(15) { background: var(--vermilion); }
+.specks i:nth-child(10), .specks i:nth-child(2) { background: var(--gold-deep); }
+@media (max-width: 700px) {
+  .specks i:nth-child(3), .specks i:nth-child(5), .specks i:nth-child(8),
+  .specks i:nth-child(13), .specks i:nth-child(14) { display: none; }
+}
+
+/* Drops thrown off the ensō when you tap it. They join the specks in the same
+   little gravity world, so a tap does not spawn a separate effect — it adds to
+   the one already on the page. */
+.ink-drop {
+  /* left/top MUST be pinned. Without them an absolutely positioned child falls
+     back to its static position, and inside a centring flex container that is
+     nowhere near the origin — the drops burst off the right edge of the page. */
+  position: absolute; left: 0; top: 0; z-index: 4;
+  border-radius: 50%; background: var(--ink); pointer-events: none;
+  will-change: transform, opacity;
+}
+
+/* ---------- the foot line ----------
+   Three quiet signals along the bottom margin: where we are, what we believe,
+   and one invitation to play. Nothing above 17px, nothing shouting. */
+.hero-foot {
+  position: absolute; left: var(--pad); right: var(--pad);
+  bottom: clamp(15px, 2vh, 22px); z-index: 5;
+  display: flex; align-items: center; justify-content: space-between; gap: 20px;
+  text-align: left;
+}
+/* full ink, not the muted tone: this line stands on a painted foreground,
+   not on flat paper, and a mid grey would disappear into the mist */
+.foot-l { font-size: 13px; font-weight: 700; letter-spacing: 0.18em; color: var(--ink); }
+.foot-l .seal { font-family: "Shippori Mincho", serif; color: var(--accent-ink); letter-spacing: 0.14em; }
+.foot-c { font-family: "Shippori Mincho", Georgia, serif; font-size: clamp(15px, 1.32vw, 19px); font-weight: 500; color: var(--ink); }
+.foot-r {
+  font-family: inherit; font-size: 14px; font-weight: 600; letter-spacing: 0.01em;
+  color: var(--ink); background: none; border: 0; cursor: pointer;
+  display: inline-flex; align-items: center; gap: 9px;
+  padding: 11px 15px; margin: -11px -15px -11px 0; border-radius: 999px;
+  transition: color 0.25s ease, background 0.25s ease;
+}
+.foot-r::before { content: ""; flex: none; width: 7px; height: 7px; border-radius: 50%; background: var(--vermilion); }
+.foot-r:hover { color: var(--ink); background: rgba(17,17,17,0.055); }
+@media (max-width: 1080px) { .foot-c { display: none; } }
+@media (max-width: 700px) {
+  .hero-foot { flex-direction: column; align-items: flex-start; gap: 4px; }
+  .foot-r { margin-left: -15px; }
+}
+
+.btn {
+  display: inline-flex; align-items: center; gap: 9px; padding: 14px 28px; border-radius: 999px;
+  font-size: 14px; font-weight: 600; letter-spacing: 0.01em;
+  transition: transform 0.25s ease, background 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+}
+/* deep vermilion base: white button text at 14px needs 4.5:1 (bright vermilion
+   was 3.99); hover steps darker still so the pressed direction stays legible */
+.btn.primary { background: var(--vermilion-deep); color: #fff; box-shadow: 0 14px 30px rgba(191,50,24,0.28); }
+.btn.primary:hover { transform: translateY(-2px); background: #A02611; }
+.btn.quiet { border: 1px solid rgba(17,17,17,0.3); color: var(--ink); background: rgba(255,255,255,0.6); }
+.btn.quiet:hover { transform: translateY(-2px); border-color: var(--gold-deep); color: var(--gold-ink); }
+.btn:active { transform: translateY(0) scale(0.97); }
+
+/* ---------- 2 · marquee ---------- */
+.marquee { position: relative; overflow: hidden; border-top: 1px solid rgba(17,17,17,0.14); border-bottom: 1px solid rgba(17,17,17,0.14); background: var(--paper-2); padding: 16px 0; }
+/* WCAG 2.2.2, and the reason it is a real control rather than a hover trick:
+   the band moves on its own at about 52 px/s for as long as it is on screen,
+   and a visitor who has not set prefers-reduced-motion has no way to stop it.
+   Hover does not count — it does not exist on a phone, and the rule asks for a
+   mechanism, not a gesture.
+   It is drawn in the band's own language instead of being an added ornament:
+   no box, no icon file, two hairline bars in ink, resting at low contrast and
+   coming up on hover or focus. The paper gradient lets the type slide out of
+   sight under it rather than colliding with it. 72x44 is the hit area; the mark
+   inside it is 8px wide. */
+/* LEFT EDGE, not right: the fixed `.tate` seal (二一七 · ANKARA) lives against
+   the right margin and the first attempt put the control directly underneath
+   it. The band starts here anyway, so the mark reads as the start of the strip
+   rather than as something stuck on the end of it. */
+.marq-hold {
+  position: absolute; left: 0; top: 0; bottom: 0; z-index: 2;
+  /* WIDE ENOUGH THAT THE TYPE IS GONE BEFORE THE MARK. At 72px the fade still
+     had legible letters running under the two bars and the strip read
+     "‖EPENDENT". The mark needs clear paper around it, so the fade is the
+     control's real width and the glyph sits at the far left of it. */
+  width: clamp(104px, 12vw, 156px);
+  display: flex; align-items: center; justify-content: flex-start;
+  padding: 0 0 0 18px; border: 0; cursor: pointer; color: var(--ink);
+  background: linear-gradient(to left, rgba(244,244,243,0) 0%, var(--paper-2) 58%);
+}
+.marq-hold::before {
+  content: ""; width: 8px; height: 12px;
+  border-left: 2px solid currentColor; border-right: 2px solid currentColor;
+  /* 0.46, NOT 0.38, BECAUSE THIS IS A CONTROL. WCAG 1.4.11 asks 3:1 of the
+     visual indicator of a control, not of text. #111 at 0.38 over --paper-2
+     composites to rgb(158,158,157) and measures 2.44:1 — read off the rendered
+     PNG, not from a DOM walk. 0.46 lands at rgb(140,140,139) and 3.06:1. The
+     mark is two 8x12px bars inside a 44px target; below the threshold they are
+     the only cue and they disappear on a bright screen. */
+  opacity: 0.46; transition: opacity 0.25s ease;
+}
+/* WINDOWS HIGH CONTRAST STRIPS BACKGROUNDS, AND THIS BUTTON WAS ONLY A
+   BACKGROUND. Its whole visual presence is the paper gradient that clears the
+   scrolling type; forced-colors removes background-image, so the two bars ended
+   up drawn straight on top of the moving band — the site's only WCAG 2.2.2
+   mechanism, invisible to the people most likely to need it. A system-colour
+   fill and a border give it a body again, and forced-color-adjust: none on the
+   bars keeps them from being repainted into the fill they sit on. */
+@media (forced-colors: active) {
+  .marq-hold { background: Canvas; border: 1px solid ButtonText; }
+  .marq-hold::before { opacity: 1; forced-color-adjust: none;
+    border-left-color: ButtonText; border-right-color: ButtonText; }
+  .marq-hold[aria-pressed="true"]::before { border-left-color: ButtonText; }
+}
+.marq-hold:hover::before, .marq-hold:focus-visible::before { opacity: 0.85; }
+.marq-hold:focus-visible { outline: 2px solid var(--vermilion); outline-offset: -4px; }
+/* held: the two bars become a single play mark */
+.marq-hold[aria-pressed="true"]::before {
+  width: 0; height: 0; border: 0;
+  border-left: 9px solid currentColor; border-top: 6px solid transparent; border-bottom: 6px solid transparent;
+  opacity: 0.5;
+}
+.marquee-row { display: inline-flex; align-items: center; gap: 26px; white-space: nowrap; will-change: transform; }
+/* 700, NOT 600, and the reason is a 124 KB download. Shippori Mincho has no
+   variable cut, so every weight is its own file — and 600 was carried by this
+   one decorative ticker and nothing else on the site. Measured: 20 elements,
+   all of them here, against 43 at 700 and 4 at 800. At 15-22px the difference
+   between the two cuts is not visible; the file was a fifth of the page's
+   entire font payload. */
+.marquee-row span { font-family: "Shippori Mincho", serif; font-weight: 700; font-size: clamp(15px, 1.8vw, 22px); letter-spacing: 0.06em; color: var(--ink); }
+.marquee-row .dot { color: var(--vermilion); font-size: 13px; }
+
+/* ---------- 3 · manifesto ---------- */
+.statement { max-width: var(--maxw); margin: 0 auto; }
+/* Editorial two-column set on desktop: the big line sits left, the ink-brightening
+   paragraph fills the right half that used to be empty — denser, more magazine. */
+@media (min-width: 821px) {
+  /* Full-width headline, then a balanced [illustration | paragraph] row — the
+     ink art occupies the half that used to sit empty under the long headline.
+     The studio section mirrors it (text left, art right) for rhythm. */
+  .statement, .studio {
+    display: grid; grid-template-columns: 1fr 1.05fr;
+    column-gap: clamp(36px, 5vw, 90px); align-items: start;
+  }
+  .statement .eyebrow, .studio .eyebrow { grid-column: 1 / -1; }
+  .statement .display, .studio .display { grid-column: 1 / -1; }
+  .statement .section-art { grid-column: 1; grid-row: 3; }
+  .statement .brighten    { grid-column: 2; grid-row: 3; }
+  /* .wheel, not .section-art — in .studio the figure is nested INSIDE .wheel
+     (the ensō ring's box), so placing the figure placed a grid item that is not
+     a grid child of this container and the ring was left to auto-flow. Measured
+     at 1440px while potter.webp was still lazy-loading: figure centre x=1128.7,
+     ring centre x=1041.6 — the ring sat 87px off the drawing it is drawn around.
+     .statement above is untouched: there the figure really is a direct child. */
+  .studio .wheel          { grid-column: 2; grid-row: 3; }
+  .studio .brighten       { grid-column: 1; grid-row: 3; }
+  .statement .brighten, .studio .brighten { align-self: center; margin-top: clamp(30px, 4.5vh, 60px); padding-bottom: 8px; }
+  .section-art { align-self: center; margin-top: clamp(30px, 4.5vh, 60px); }
+  .studio .values { grid-column: 1 / -1; }
+}
+/* the ink illustration itself — unframed, straight on the washi like the hero
+   scene, with a small annotated caption in the print-margin tradition */
+.section-art { margin: 0; text-align: center; }
+/* the art is baked onto the exact page paper tone with feathered borders, so
+   it merges into the washi like a print — no box, no rectangular shadow */
+.section-art img { width: min(100%, 460px); height: auto; display: block; margin: 0 auto; }
+/* 34ch, because it had no measure at all and ran to 70–74ch directly beside a
+   24ch paragraph — the widest line on the page sitting next to the narrowest */
+.section-art figcaption { margin-top: 16px; font-family: "Shippori Mincho", Georgia, serif;
+  font-style: italic; font-size: clamp(13px, 1.3vw, 15px); color: var(--ink-2);
+  max-width: 34ch; margin-inline: auto; }
+.section-art figcaption::before { content: "— "; color: var(--gold-deep); font-style: normal; }
+@media (max-width: 820px) {
+  .section-art { margin-top: 34px; }
+  .section-art img { width: min(74vw, 340px); }
+}
+/* ---------- the section glyph ----------
+   THE JAPANESE MOVES HERE, out of the eyebrows. It used to sit in six of them
+   as `仕事 · 217 YAKLAŞIMI` — a kanji doing no semantic work for a Turkish
+   reader, occupying the grammatical slot of a label, six times in a row. Six
+   identical instances is not a brand system; a system has exceptions. Worse,
+   NEITHER finished screen uses it: the hero has no eyebrow at all and the
+   shelf's marker is bare "RAFTA", load-bearing in a three-column grid.
+   As a large silent mark it is the opposite: one per section that has earned
+   one, at a size where it reads as ink on the page rather than as a caption.
+   The colour is a transparency of whatever the section's ink is, so the same
+   rule works on paper and on the wall. */
+.section-seal {
+  position: absolute; top: clamp(40px, 7vh, 110px); right: clamp(-10px, 1vw, 40px);
+  font-family: "Shippori Mincho", serif; font-size: clamp(120px, 21vw, 330px);
+  font-weight: 800; line-height: 0.8;
+  color: rgba(17,17,17,0.045); z-index: 0; pointer-events: none; user-select: none;
+}
+.on-ink .section-seal { color: rgba(255,255,255,0.055); }
+
+/* ---------- the headline stops before the nav ----------
+   MEASURED, not guessed: the nav capsule is an opaque white pill fixed at the
+   top right, and a full-width .display runs straight under it. Swept the whole
+   page at 60px steps — seven headlines collide, 386–479px wide, and at
+   scrollY 7980 the last letters of "yeniden" are simply gone. It never happens
+   on the finished screens because the hero head is bottom-anchored and the
+   shelf head only ever occupies the left two thirds. Those two were composed
+   around the page furniture; the rest were not.
+   Capping the measure fixes it and buys the asymmetry the back half was
+   missing in the same move — the freed right side is where the section glyph
+   now lives, so the constraint produces the composition rather than a hole. */
+@media (min-width: 901px) {
+  /* .final is centred and gets its own, wider measure on the next line — it was
+     in this list too, so the 66% here was overwritten before it ever applied. */
+  .statement .display, .studio .display, .process .display, .craft .display { max-width: 66%; }
+  .final .display { max-width: 78%; margin-inline: auto; }
+}
+@media (max-width: 900px) {
+  /* the toggle is smaller but still bites — measured on the "gerekeni," line */
+  .statement .display, .studio .display, .process .display, .craft .display { max-width: 82%; }
+}
+/* ---------- the chrome gets out of the way ----------
+   Capping the headlines took the collisions from seven to three, but the last
+   three are elements that legitimately reach the right edge — the third value
+   card, the centred reach head, the centred close. Shrinking those to dodge a
+   pill would be letting the furniture design the page.
+   So the furniture moves instead: reading is scrolling down, and while you are
+   reading you do not need the menu. It returns the moment you scroll up, which
+   is when you are looking for it. The brand mark is left alone — that is the
+   way back and it should never disappear. */
+.nav-links, .nav-toggle {
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.3s ease,
+              visibility 0s linear 0s;
+}
+/* `.nav-away` and everything that hid the bar on scroll-down is gone — see the
+   note in main.js. The transition above stays: it is what the mobile drawer
+   opens and closes on. */
+/* One display scale for every section heading. The ceiling is set by the
+   longest line on the page ("kendi ürünlerimizi kuruyoruz.", 14.95em) against
+   the narrowest headline container, so no section can overflow and all four
+   read as one system. The hero stays alone at the top of the hierarchy. */
+.statement .display, .studio .display, .process .display, .craft .display { font-size: clamp(34px, 5.2vw, 78px); }
+.statement .display { margin-top: 24px; line-height: 1.0; position: relative; }
+
+/* ---------- THE KINTSUGI HEADLINE IS GONE, AND WHY IT WENT ----------
+   The idea was good on paper: the section says "we begin where things fall
+   short", the artwork beside it is a bowl mended along its break, so the
+   sentence was built as a broken object — two pieces arriving slightly out of
+   true, a generated fracture laid along the join to pull them home.
+   In the page it did not read as a mend. It read as a stray "We" on its own
+   line with a horizontal rule parked under it, and it was reported as broken
+   three separate times. The first attempt kept the structure and shortened the
+   seam from 13.5em to 3.5em; still broken, because the seam was never the
+   problem — the ORPHAN was. A single word alone on a line above a line is a
+   typographic accident, and no amount of styling the accident makes it read as
+   intent.
+   So the sentence is one sentence again, and the accent it already had does the
+   work: `.gold` (a legacy class name for the brand vermilion — gold was retired
+   from this palette on purpose) carries "begin". The bowl two inches away still
+   spells the metaphor out, in the medium that can actually hold it.
+   Removed with it: .kin-piece, .kin-a, .kin-b, .kin-seam, the .is-mended release
+   in main.js and its ScrollTrigger. That leaves assets/seam.svg with NO users at
+   all — grepped, zero references outside this note. It stays in the repo for now
+   because it costs nothing to serve a file nobody requests, but it is dead
+   weight and the honest thing is to say so rather than imply someone still
+   needs it. */
+.brighten {
+  margin-top: clamp(40px, 6vh, 84px); position: relative;
+  font-family: "Shippori Mincho", Georgia, serif;
+  font-size: clamp(22px, 3vw, 42px); font-weight: 500; line-height: 1.4; letter-spacing: -0.005em; max-width: 24ch;
+}
+/* no CSS transition here: the scroll scrub already writes smooth color steps,
+   and a transition on top made 42 spans churn style work on every frame */
+/* #767676, not --ink-dim (#8C8C8C). The scrub reveals the words one at a time,
+   so mid-scroll half the paragraph is still sitting at its start colour — and
+   that start colour was 3.36:1 on white, under the 4.5:1 body-text floor.
+   #767676 is 4.54:1 and the reveal is visually identical. */
+.brighten .w { color: #767676; }
+
+
+/* ---------- 5 · products ---------- */
+/* ---------- 217 ESERLERİ — the gallery wall ----------
+   This is the screen that greets you once the hero slides away, so it breaks
+   the cream: its own full-bleed sumi ink, laid inside the section (the deck's
+   paper sheet sits a layer below). The framed white print then reads exactly
+   as what the eyebrow calls it — a work, hung on a dark wall. */
+/* ---------- THE INK WALL ----------
+   This used to be `.products::before` and nothing else on the page could reach
+   it, which is why the deck reverted to white for 6,110px after the shelf and
+   never changed ground again. Ink is not a background here — it is the page's
+   emphasis, and a print that only inks once is a print with one idea.
+   So it becomes a class, and it is spent THREE times, on the three moments
+   that are claims rather than exposition: the shelf (what we have made), the
+   standard (that we stand behind it), and the footer (the seal). Paper carries
+   everything in between. That alternation is a rule a viewer can feel without
+   being told, which is the only kind worth having.
+   The 100vw + translateX trick is what lets a max-width section paint edge to
+   edge without a wrapper; z-index -1 keeps it under the section's own text
+   while `section { position: relative }` gives it something to anchor to. */
+/* ---------- THE BLEED EDGE ----------
+   The wall used to start on a ruler line, which is the one thing ink never
+   does. Sumi on washi climbs the fibres: short fingers where the paper is
+   tight, long runs where it is loose, and a few islands that broke away from
+   the edge entirely. The mask is generated with exactly that in mind — long
+   waves for the sheet's own grain, short ones for capillary draw, and 25
+   detached blots above the line.
+   It sits ABOVE the section it belongs to, solid edge down against the ink and
+   fingers reaching up into the paper, so the wall reads as something the page
+   soaked up rather than a div that changed colour. Same z-index as the wall
+   itself, so it is under every piece of type. */
+.bleed {
+  position: absolute; z-index: -1; pointer-events: none;
+  left: 50%; width: 100vw;
+  height: clamp(30px, 4vh, 62px);
+  background: var(--ink);
+  -webkit-mask: url("assets/bleed.svg?w=1") bottom center / 100% 100% no-repeat;
+          mask: url("assets/bleed.svg?w=1") bottom center / 100% 100% no-repeat;
+}
+/* THE OVERLAP IS IN PIXELS, NOT PERCENT, AND THAT IS THE FIX FOR THE HAIRLINE
+   AT THE INK'S EDGE. It was `-99%`, which on a 37.88px band leaves the torn
+   sheet overlapping the wall it belongs to by 0.37px. A section's top almost
+   never lands on a whole device pixel — measured at 1919x947 the boundary sat
+   at y=229.77 — so the ink layer's first row is drawn with partial coverage,
+   and a sub-pixel overlap cannot reliably cover a partially-covered row. In
+   this renderer the residue is 1/255 and invisible; on other GPUs and at
+   fractional display scaling the same arithmetic is what shows up as a straight
+   grey line lying across the ragged edge, which is exactly how it was reported.
+   `calc(-100% + 2px)` gives a whole-pixel overlap at every zoom, scale factor
+   and section height, so there is nothing left to round wrong. 2px, because 1px
+   is still one rounding step away from zero. */
+.bleed-top { top: 0; transform: translateX(-50%) translateY(calc(-100% + 2px)); }
+
+.on-ink { color: var(--paper); }
+.on-ink::before {
+  content: ""; position: absolute; z-index: -1;
+  left: 50%; transform: translateX(-50%); width: 100vw;
+  top: 0; bottom: 0; background: var(--ink);
+}
+/* the two text tones that survive the wall: --ink-2 is #575757 and dies here
+   (1.5:1), so supporting copy takes a transparency of the paper instead, and
+   the accent takes the lit step of the vermilion that already exists for
+   exactly this ground */
+.on-ink .display, .on-ink h2, .on-ink h3 { color: var(--paper); }
+.on-ink .gold, .on-ink .eyebrow { color: var(--vermilion-ink); }
+.products { max-width: var(--maxw); margin: 0 auto; }
+/* ---------- the shelf head ----------
+   THREE COLUMNS, and the third one is the point. Measured on the reference's
+   work section at 1425: the marker sits hard left at x 32 (91 wide), the
+   statement runs x 147 to 840 (693, a little over half the container), and a
+   small grey paragraph holds the right column at x 864, 529 wide — carrying
+   `padding-top: 280px`, which drops it out of the top line and sets its first
+   line level with the LAST line of the statement.
+   That drop is what stops the block reading as a stack. An earlier pass here
+   removed the third column outright on a misreading of the same page; flat is
+   exactly what it looked like afterwards. */
+.shelf-head {
+  position: relative;
+  --head-fs: clamp(34px, 3.9vw, 56px);
+  display: grid;
+  grid-template-columns: minmax(84px, 8.4%) minmax(0, 1.42fr) minmax(0, 1fr);
+  /* TWO ROWS, and the second one is how the note gets its drop. Bottom-aligning
+     it inside a single row only sinks it as far as the statement is tall, which
+     on a two-line statement is barely a drop at all — measured, ours started 49%
+     down the block where the reference's starts 79%. Putting the note in row 2
+     of the third column makes its top the statement's BOTTOM, whatever the
+     statement turns out to be, and the gap below that is stated in the heading's
+     own em so it scales with the type instead of being a pixel that only
+     happens to be right at one width. */
+  grid-template-rows: auto auto;
+  column-gap: clamp(24px, 2.4vw, 34px);
+  align-items: start;
+}
+.shelf-eyebrow {
+  grid-column: 1; grid-row: 1;
+  font-size: 13px; font-weight: 700; letter-spacing: 0.24em;
+  color: var(--vermilion-ink); padding-top: 0.6em;
+}
+.shelf-text { grid-column: 2; grid-row: 1; }
+.shelf-line {
+  margin: 0;
+  font-family: "Shippori Mincho", Georgia, serif; font-weight: 700;
+  font-size: var(--head-fs); line-height: 1.12; letter-spacing: -0.012em;
+  color: var(--paper);
+}
+.shelf-line em { font-style: italic; color: var(--vermilion-ink); }
+.shelf-line .ln { display: block; }
+
+/* ---------- the brush under the statement ----------
+   The reference draws a hand-scrawled pen line here and animates it in with
+   stroke-dashoffset. Same job, different hand: ours is a brush, and a brush
+   stroke is not a constant width — so this is a FILLED shape (thick through the
+   body, tapering to nothing at both ends, the tail breaking up where the hair
+   runs dry) carried as a mask so it takes its colour from CSS.
+   It is revealed with clip-path rather than a dash offset, and that is the
+   point of difference: a dash draw reads as a pen tip travelling at constant
+   width, while wiping a filled shape left to right reads as ink being LAID
+   DOWN. 0.15s behind the head's own slide, so it lands after the words settle. */
+.shelf-rule {
+  display: block; width: min(64%, 380px); height: 26px;
+  margin-top: clamp(16px, 1.6vw, 24px);
+  background: var(--vermilion-ink);
+  -webkit-mask: url("assets/brush-rule.svg?v=2") left center / 100% 100% no-repeat;
+          mask: url("assets/brush-rule.svg?v=2") left center / 100% 100% no-repeat;
+  clip-path: inset(0 100% 0 0);
+  transition: clip-path 0.72s cubic-bezier(0.22, 1, 0.36, 1) 0.15s;
+}
+.shelf-head.is-in .shelf-rule { clip-path: inset(0 0 0 0); }
+html.no-motion .shelf-rule { clip-path: inset(0 0 0 0); transition: none; }
+
+/* THE DROP. Bottom-aligned to the statement, exactly as the reference sets it —
+   its right-hand paragraph carries 280px of top padding for the same reason.
+   `align-self: end` does it without a magic number, so the note stays level
+   with the last line whether the statement wraps to two lines or three. */
+/* THE DROP. The reference pushes its paragraph down with `padding-top: 280px`
+   — 5.83 times its own heading size — so the paragraph's first line clears the
+   scrawled rule by 1.69em and the block ends up 356 tall for 199 of content.
+   That deliberate emptiness is what stops the head reading as two things side
+   by side. Ours takes the same 1.69em, measured off the same page, but counts
+   it from the statement's real bottom rather than from a number. */
+.shelf-note {
+  grid-column: 3; grid-row: 2;
+  margin-top: calc(var(--head-fs) * 1.69);
+  font-size: clamp(15px, 1.15vw, 18px); line-height: 1.6;
+  color: rgba(255,255,255,0.62); max-width: 46ch;
+}
+/* THE REFERENCE'S ENTRANCE, read off its IX2 data rather than eyeballed: the
+   blocks start at opacity 0 and x -300 / +300 and travel to 0 over 500ms on
+   `ease`, triggered by SCROLL_INTO_VIEW. The marker comes in from the left, the
+   statement and its note from the right, so they close on the centre. */
+/* THE STAGED STATE IS SCOPED TO :not(.is-in), and that is a specificity war
+   avoided rather than won. Written as `.js .shelf-head [data-slide]` the staging
+   and the `.is-in` release are both (0,3,0), so the phone override forty lines
+   below — same weight, later in the file — beat the release and the head stayed
+   64px off to the side on every phone. Measured at 390: eyebrow left -44 where
+   it should have been 20. With `:not(.is-in)` the staged rules simply STOP
+   MATCHING once the class lands, so there is nothing left to out-rank. */
+.shelf-head [data-slide] {
+  transition: transform 0.5s ease, opacity 0.5s ease;
+}
+/* The hint is worth paying for on the way in and worth nothing afterwards: this
+   is a one-time entrance, and `.is-in` is its release, so scoping the hint to
+   the pre-entrance state drops the layer the moment the head has landed. */
+.shelf-head:not(.is-in) [data-slide] { will-change: transform, opacity; }
+.js .shelf-head:not(.is-in) [data-slide] { opacity: 0; }
+.js .shelf-head:not(.is-in) [data-slide="-1"] { transform: translateX(-300px); }
+.js .shelf-head:not(.is-in) [data-slide="1"]  { transform: translateX(300px); }
+/* the note trails the statement by a beat rather than arriving welded to it */
+.shelf-head.is-in .shelf-note { transition-delay: 0.09s; }
+/* No JS, or reduced motion: the head is simply there.
+   `html.` IS LOAD-BEARING — written as `.no-motion ...` this is specificity
+   (0,3,0), identical to the phone override below, which then wins on source
+   order and leaves the head parked 64px off to the side forever. */
+html.no-motion .shelf-head [data-slide] { transition: none; }
+@media (max-width: 1100px) {
+  /* the note loses its own column before the statement loses its scale — and
+     with it the drop, which only means anything beside the statement */
+  .shelf-head { grid-template-columns: minmax(72px, 8%) minmax(0, 1fr); }
+  .shelf-note { grid-column: 2; grid-row: 2; margin-top: clamp(18px, 2vw, 26px); max-width: 52ch; }
+}
+@media (max-width: 900px) {
+  .shelf-head { grid-template-columns: 1fr; row-gap: 18px; }
+  .shelf-eyebrow, .shelf-text { grid-column: 1; grid-row: auto; }
+  .shelf-note { grid-column: 1; grid-row: auto; margin-top: 0; }
+  .shelf-rule { width: min(76%, 280px); height: 20px; }
+  /* 300px of travel is a third of a phone screen and reads as a lurch */
+  .js .shelf-head:not(.is-in) [data-slide="-1"] { transform: translateX(-64px); }
+  .js .shelf-head:not(.is-in) [data-slide="1"]  { transform: translateX(64px); }
+  .shelf-eyebrow { padding-top: 0; }
+}
+
+/* ---------- head to shelf ----------
+   THREE QUARTERS OF THE SECTION'S OWN PADDING, at every knee of it. `section`
+   is clamp(96px, 15vh, 210px) (line 368), so this is 72 / 11.25vh / 158 and the
+   ratio never moves: 0.75 at any window shape.
+   The unit is load-bearing and it is vh ON PURPOSE. This gap was already tied to
+   the parent — 6.5vh against 15vh, a locked 0.433 — and rewriting it in vw looked
+   tempting (the reference states a flat 120px) but decouples it from the padding
+   it must stay subordinate to. A vw gap of 128px against a 15vh padding inverts
+   on any window wider than 1438 and shorter than 853: the head would sit further
+   from its own cards than the whole section sits from the screen before it, and
+   the head stops reading as the shelf's. That is most Windows laptops once
+   browser chrome is subtracted, so it would have shipped broken for the majority.
+   The fraction moved from 0.433 to 0.75 because the old one was measurably tight:
+   58.5px at 1425 against the reference's 120, and only 2.4x the 24px gutter
+   between the cards where theirs is 5x — so the section break barely read as
+   bigger than the seam inside it. At 0.75 it resolves to 101px there, 4.2x the
+   gutter, and the empty run under the brush lands on 277px against the
+   reference's own 277. That agreement is a check, not the derivation. */
+.slots {
+  position: relative; display: flex; gap: 24px;
+  margin-top: clamp(72px, 11.25vh, 158px);
+}
+.slot {
+  /* z-index 1 rather than auto: every panel is its own stacking context, so a
+     dormant panel's media (z 6) can never paint over the panel being hovered */
+  position: relative; z-index: 1; flex: 1 1 0; min-width: 0;
+  display: flex; flex-direction: column; justify-content: space-between;
+  gap: 24px;
+  min-height: clamp(400px, 35vw, 532px);
+  /* held in a variable because the copy's scrims have to bleed out to exactly
+     this edge — a hard-coded second copy would drift the first time it moves */
+  --pad-slot: clamp(24px, 2.6vw, 40px);
+  padding: var(--pad-slot);
+  /* The wall is #111 and the slot is a panel mounted on it. Flat fill made it
+     a grey rectangle; this is lit instead — brighter along the top edge where
+     the light falls, settling into the wall through the middle, picking up
+     again at the foot. Two hairlines, not one: a bright top edge and a quieter
+     ring, which is how a mounted board actually catches a room. */
+  background:
+    linear-gradient(180deg,
+      rgba(255,255,255,0.075) 0%,
+      rgba(255,255,255,0.022) 46%,
+      rgba(255,255,255,0.014) 72%,
+      rgba(255,255,255,0.05) 100%);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.09),
+              inset 0 1px 0 rgba(255,255,255,0.16);
+  /* NOT overflow:hidden. The revealed sheet ends at 10deg and has to hang over
+     its neighbours; clipping it here is what made our version read as a box
+     lighting up instead of a print being laid down. The raised z-index below
+     is the other half of that — without it the tilt would slide UNDER the
+     panel to its right. */
+  overflow: visible;
+  transition: background 0.5s ease, box-shadow 0.5s ease;
+}
+.slot:nth-child(2) { flex-grow: 0.956; }
+.slot:nth-child(3) { flex-grow: 1.031; }
+/* `html.flick` is set while main.js drives the flick (a real hover pointer):
+   then "pointed at" is its .is-lit, not :hover, which also fires on a panel
+   the page merely scrolls under a still cursor (see the note in main.js).
+   Everywhere else — no script, reduced motion, touch — :hover is as it was. */
+html:not(.flick) .slot:hover, .slot.is-lit, .slot:focus-within {
+  background: rgba(255,255,255,0.055); box-shadow: inset 0 0 0 1px rgba(255,255,255,0.16);
+  z-index: 3;
+}
+/* content sits at 2; the media opens ABOVE it at 6 and takes the whole panel,
+   which is the reference's move: at rest you read the name, on hover you see
+   the thing */
+/* The copy gets its own ground. On a pointer device the panel is empty behind
+   it, but on touch the artwork sits there as a ghost and the tags and the name
+   were reading straight off it. A scrim bled from the panel's own edges — dark
+   at the edge, nothing by the middle — means the type always has something
+   under it and the panel still looks empty when it is. */
+.slot-top, .slot-foot { position: relative; z-index: 2; }
+.slot-top::before, .slot-foot::before {
+  content: ""; position: absolute; z-index: -1; pointer-events: none;
+  left: calc(var(--pad-slot) * -1); right: calc(var(--pad-slot) * -1);
+}
+.slot-top::before {
+  top: calc(var(--pad-slot) * -1); bottom: -28px;
+  background: linear-gradient(180deg, rgba(10,10,10,0.72) 0%, rgba(10,10,10,0.42) 55%, rgba(10,10,10,0) 100%);
+}
+.slot-foot::before {
+  bottom: calc(var(--pad-slot) * -1); top: -34px;
+  background: linear-gradient(0deg, rgba(10,10,10,0.78) 0%, rgba(10,10,10,0.44) 58%, rgba(10,10,10,0) 100%);
+}
+.slot-n {
+  display: inline-flex; align-items: center; gap: 10px;
+  font-size: 12px; font-weight: 600; letter-spacing: 0.14em;
+  color: rgba(255,255,255,0.5); margin-bottom: 14px;
+}
+/* a short rule off the number, the way a shelf tag is ruled */
+.slot-n::after {
+  content: ""; width: 26px; height: 1px;
+  background: rgba(255,255,255,0.26);
+}
+.slot.is-live .slot-n { color: var(--vermilion-ink); }
+/* 0.6, not the 0.5 this inherited. The dormant slots rule themselves off in
+   rgba(255,255,255,0.26) — 2.30:1 against the wall — and the live slot's rule
+   has to read as at least as present as theirs or the one shelf that is filled
+   looks like the faint one. At 0.5 the deeper red lands on 2.00:1; 0.6 puts it
+   at 2.40:1, which is where the old colour sat. Both are decoration, not state
+   — the state is carried by the number itself — so neither owes 3:1. */
+.slot.is-live .slot-n::after { background: rgba(225,75,54,0.6); }
+.slot-name {
+  font-family: "Shippori Mincho", Georgia, serif; font-weight: 700;
+  font-size: clamp(30px, 3.3vw, 48px); line-height: 1.16; letter-spacing: -0.01em;
+  color: var(--paper); margin: 0;
+}
+.slot-tags { list-style: none; display: flex; flex-wrap: wrap; gap: 10px; margin: 0; }
+.slot-tags li {
+  height: 34px; display: inline-flex; align-items: center; padding: 0 13px;
+  border-radius: 999px; background: #fff; color: #151618;
+  font-size: 12px; font-weight: 600; letter-spacing: 0.005em; white-space: nowrap;
+}
+/* the open slot has nothing to sell, so its tag is drawn rather than filled */
+.slot.is-open .slot-tags li { background: none; color: rgba(255,255,255,0.6); box-shadow: inset 0 0 0 1px rgba(255,255,255,0.24); }
+
+/* ---------- the reveal ----------
+   Read straight off the reference's own interaction data rather than guessed:
+     0ms          scale 0, rotate 0, opacity 1   (set instantly)
+     +100ms 200ms scale -> 1.1, rotate -> 5deg   (it OVERSHOOTS past 1)
+     +300ms 100ms scale -> 1,   rotate -> 10deg  (settles back, still turning)
+   Two things make it land. It ends TILTED, and it overshoots on the way — a
+   print flicked down onto the shelf, not a box fading up. The tilt is also why
+   the panel below must not clip: at 10deg an inset-0 sheet measures 552x605
+   inside a 467x532 slot, so it hangs over its neighbours on purpose.
+   The move itself is driven by GSAP (main.js) because three chained stages are
+   not a transition; this rule only holds the resting state and the no-motion
+   fallback. */
+.slot-media {
+  position: absolute; inset: 0; z-index: 6;
+  display: grid; place-items: center; overflow: hidden;
+  background: #0C0C0C;
+  opacity: 0; transform: scale(0); transform-origin: 50% 50%;
+  pointer-events: none;
+  /* it hangs over its neighbours, so it needs to cast onto them */
+  box-shadow: 0 40px 90px rgba(0,0,0,0.55);
+}
+/* WILL-CHANGE ONLY WHILE THE POINTER IS ACTUALLY THERE. It used to be declared
+   unconditionally, and the three panels then held composited layers for the
+   whole visit while sitting at opacity 0: measured at scrollY 4417, three layers
+   of 667x718, 657x718 and 643x718 — 1.41 MPx together — with paints=0. Layers
+   that never paint are not free; everything drawn above them gets promoted too,
+   for "Overlap", and six large Overlap layers were counted on that screen.
+   Hover is the correct moment to promote: it arrives before the flick, which is
+   the entire purpose of the hint, and it costs nothing on a page nobody is
+   pointing at. Bound with :hover/:focus-within on the slot, not the panel,
+   because the panel is pointer-events: none. */
+html:not(.flick) .slot:hover .slot-media, .slot.is-lit .slot-media,
+.slot:focus-within .slot-media { will-change: transform, opacity; }
+/* No GSAP (or reduced motion): a plain crossfade, no tilt, no overshoot.
+   Scoped to those cases only so it can never fight the inline styles GSAP
+   writes on the same element. */
+.no-motion .slot { overflow: hidden; }
+.no-motion .slot-media { transition: opacity 0.28s ease; }
+.no-motion .slot:hover .slot-media, .no-motion .slot:focus-within .slot-media { opacity: 1; transform: none; }
+.slot-media img {
+  grid-area: 1 / 1; width: 100%; height: 100%; object-fit: cover;
+  /* the slow drift: it only runs while the panel is open, so the still reads
+     as footage rather than as a screenshot pasted over the card. Its own
+     element and its own property, so it never collides with the GSAP tween. */
+  transform: scale(1.04); transition: transform 7s linear;
+}
+html:not(.flick) .slot:hover .slot-media img, .slot.is-lit .slot-media img,
+.slot:focus-within .slot-media img { transform: scale(1.15); }
+/* the two waiting slots: our own ink field, no invented product shot */
+.slot-wash {
+  grid-area: 1 / 1; width: 100%; height: 100%;
+  background: url("assets/reach-ink.webp?w=2") no-repeat center center / cover;
+  /* the plate is sumi on white; inverted it is the same wave in white on black.
+     Held at 0.15 so the mark reads over it rather than fighting it. */
+  filter: invert(1); opacity: 0.15;
+}
+.slot-mark {
+  grid-area: 1 / 1; align-self: center; justify-self: center;
+  font-family: "Shippori Mincho", serif; font-weight: 700;
+  font-size: clamp(72px, 8vw, 128px); line-height: 1;
+  color: rgba(255,255,255,0.26); user-select: none;
+}
+.slot-say {
+  grid-area: 1 / 1; align-self: end; justify-self: start;
+  padding: clamp(24px, 2.6vw, 40px);
+  font-family: "Shippori Mincho", Georgia, serif; font-style: italic;
+  font-size: clamp(16px, 1.35vw, 20px); color: rgba(255,255,255,0.8);
+}
+/* the seal stamps on as the panel opens — our mark on their mechanic */
+.slot-seal {
+  grid-area: 1 / 1; align-self: start; justify-self: end;
+  margin: clamp(18px, 1.8vw, 26px);
+  width: 44px; height: 44px; display: grid; place-items: center;
+  background: var(--vermilion); color: #fff; border-radius: 9px;
+  font-family: "Shippori Mincho", serif; font-weight: 700; font-size: 20px;
+  transform: rotate(-6deg) scale(0.4); opacity: 0;
+  transition: transform 0.5s cubic-bezier(0.34, 1.4, 0.5, 1) 0.16s, opacity 0.3s ease 0.16s;
+}
+html:not(.flick) .slot:hover .slot-seal, .slot.is-lit .slot-seal,
+.slot:focus-within .slot-seal { transform: rotate(-6deg) scale(1); opacity: 1; }
+/* the whole panel is the target, not just the title */
+.slot-hit { position: absolute; inset: 0; z-index: 8; }
+.slot-hit:focus-visible { outline: 2px solid var(--vermilion); outline-offset: -6px; }
+
+/* Touch has no hover, so the reveal would never fire and two thirds of the
+   shelf would read as empty boxes. There the art sits BEHIND the copy as a
+   ghost instead — same picture, different job. */
+@media (hover: none) {
+  /* the script never binds the flick on a touch pointer, so these are the
+     resting values, not an interrupted animation */
+  .slot { overflow: hidden; }
+  .slot-media { opacity: 0.3; transform: none; z-index: 1; }
+  .slot-media img { transform: scale(1.04); transition: none; }
+  .slot-seal { opacity: 1; transform: rotate(-6deg); transition: none; }
+  .slot-say { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .slot { overflow: hidden; }
+  .slot-media { transform: none; transition: opacity 0.2s ease; }
+  .slot:hover .slot-media, .slot:focus-within .slot-media { opacity: 1; transform: none; }
+  /* html:not(.flick) matches the gated hover rules above, so these still win */
+  .slot-media img, html:not(.flick) .slot:hover .slot-media img { transform: scale(1.04); transition: none; }
+  .slot-seal { transition: opacity 0.2s ease; transform: rotate(-6deg); }
+  html:not(.flick) .slot:hover .slot-seal { transform: rotate(-6deg); }
+}
+@media (max-width: 860px) {
+  .slots { flex-direction: column; gap: 16px; }
+  .slot, .slot:nth-child(2), .slot:nth-child(3) { flex: none; min-height: 300px; }
+}
+/* No overflow:hidden for the stacked width. It reads like free insurance and is
+   the opposite: the script already drops the turn to 0 there (see bindFlick),
+   so the only thing left to clip is the 10% overshoot — and clipping a ROTATED
+   sheet is the worse failure of the two, because the corners cut to triangles
+   rather than simply hanging over. */
+
+/* `.growing` — the standalone closing line this mark used to sit in — is gone;
+   .growing-mark survives inside the final section's eyebrow. */
+.growing-mark { display: inline-grid; place-items: center; width: 54px; height: 54px; flex: none; border: 2px solid var(--sage); color: var(--sage); border-radius: 50%; font-size: 22px; }
+
+/* ---------- 6 · the standard, on the wall ----------
+   WHAT WAS HERE: a cel-shaded 3D-rendered garden (zen.webp) — soft gradients,
+   volumetric light shafts, bokeh petals, a smoothly shaded stone lantern —
+   desaturated to grey and washed out under a 90% white scrim. Every other
+   asset on this site is flat, high-contrast brush ink. It was the only
+   full-bleed picture in the deck and it was the one thing that read as a
+   different, cheaper website. Measured, it was also unreadable: the eyebrow
+   sat at 1.24:1 against the darkest pixels it drifted over, held up by a
+   text-shadow halo, on a ground that MOVES because the plate is parallaxed.
+   A halo is not a contrast guarantee.
+   So the picture goes and the section takes the wall instead. This is the
+   heaviest sentence on the site — that we stay responsible for what we ship —
+   and it now has the page's heaviest surface under it. No eyebrow: the hero
+   has none either, and a section that is one sentence does not need a label
+   telling you it is about to be one sentence.
+   The freed right side is held by the section's own glyph at real size, in the
+   same role the 志 plays on the manifesto — texture, not a caption. */
+.craft {
+  position: relative; min-height: 92svh; display: flex; align-items: center;
+  padding-block: clamp(120px, 18vh, 220px);
+  /* NO overflow:hidden. It was here to contain the parallaxed plate, which is
+     gone — and left in place it clips the wall to the section's own max-width
+     box, so the ink stopped 30px short of each edge and the full-bleed read as
+     a wide grey card. The glyph is positioned to stay inside on its own. */
+  /* max-width moved OFF .craft-inner and onto the section: it was the reason
+     this band started at x=43 while every other section started at x=83 — a
+     40px left-edge break that reads as a mistake once you see it */
+  max-width: var(--maxw); margin: 0 auto;
+}
+.craft-inner { position: relative; z-index: 2; width: 100%; }
+.craft .display { margin-top: 0; line-height: 1.02; }
+.craft-lead {
+  margin-top: clamp(28px, 3.4vh, 44px);
+  font-size: clamp(16px, 1.9vw, 22px); font-weight: 500;
+  /* 62% white on #111 = 8.1:1; --ink-2 would have been 1.5:1 here */
+  color: rgba(255,255,255,0.62); max-width: 46ch;
+}
+
+/* ---------- 7 · studio / values ---------- */
+.studio { max-width: var(--maxw); margin: 0 auto; }
+.studio .display { margin-top: 24px; line-height: 1.0; }
+/* Three principles, so never two-up: auto-fit left an orphan on the second row
+   at tablet width (two tall cards, one short one below). Three across or one
+   per row — no in-between. */
+/* ---------- THE WHEEL ----------
+   The section says we build our own things and the picture beside it is a pair
+   of hands throwing a bowl — and the wheel, the one object in the frame whose
+   whole purpose is to turn, was the only thing standing still.
+   It turns now: an ensō drawn behind the hands, rotating with the scroll. Not a
+   circle — `border-radius` gives a closed ring of constant width, which is
+   geometry, not printing. This is generated as one brush pass: it starts, swells,
+   thins, dries out at the tail, wanders a few pixels off true radius the way a
+   hand does, and stops 24 degrees short of its own beginning. That open end is
+   the point of an ensō and it is the point of this section. */
+.wheel { position: relative; display: grid; place-items: center; }
+.wheel-ring {
+  position: absolute; z-index: 0; pointer-events: none;
+  /* 0.10 was invisible in the render — the ring has to be legible AS a ring or
+     the rotation is spent on nothing, and it sits behind an illustration that
+     is itself grey. Wide enough that the rim clears the hands rather than
+     hiding under them. */
+  width: min(132%, 660px); aspect-ratio: 1;
+  color: rgba(17,17,17,0.17);
+  background: currentColor;
+  -webkit-mask: url("assets/enso.svg?w=1") center / contain no-repeat;
+          mask: url("assets/enso.svg?w=1") center / contain no-repeat;
+  will-change: transform;
+}
+/* A DEFINITE WIDTH, OR THE FIGURE WAITS FOR ITS PICTURE. `.wheel` centres its
+   items, so the figure shrink-wraps its content — and the image's width is a
+   percentage of that same figure, which cannot resolve until the file has
+   decoded and brought its own size. Measured at 1000px: the figure stood 187px
+   wide (the caption's width) while potter.webp was lazy, then jumped to 456px
+   when it arrived mid-scroll. That 192px of growth landed under every scroll
+   trigger below it — the handscroll's pin, the brighten, the progress line all
+   ran 192px early until the next window resize re-measured them, which is
+   exactly when the page was seen to jump. Full width of the ring's box is
+   what the figure grew to anyway; now it starts there. */
+.wheel .section-art { position: relative; z-index: 1; width: 100%; }
+/* THE PLATE IS OPAQUE, SO IT HAS TO BE MULTIPLIED ONTO THE PAPER. potter.webp
+   is an RGB file with no alpha and pure white corners (checked: mode=RGB,
+   corner pixels 255,255,255), so its bounding box was painting a white square
+   straight over the ensō — the ring simply vanished where the illustration
+   overlapped it, which is exactly where the ring is supposed to pass behind
+   the hands. `multiply` is the right operator rather than cutting an alpha
+   channel: this is a sumi-e wash whose edges fade to white through soft grey,
+   and any threshold-based cut-out would leave a hard halo around the splatter.
+   White multiplied against the paper is a no-op, the ring shows through
+   untouched, and the ink darkens over it the way wet ink would.
+   Scoped to `.wheel` on purpose — the same treatment on a dark section would
+   multiply the illustration into the wall and lose it.
+   THE BLEND GOES ON THE FIGURE, NOT THE <img>, and that distinction is the whole
+   fix. `.wheel .section-art` carries position:relative + z-index:1, which makes
+   it a stacking context; a blend declared on the image inside it can only reach
+   that group's backdrop, which is empty. Measured: with the rule on the image,
+   mixBlendMode computed as "multiply" and the rendered page was byte-identical —
+   zero pixels changed. On the figure the group opens up to `.wheel` (position
+   relative, z-index auto, so not itself a stacking context) and the ring, a
+   lower-z sibling, is finally in the backdrop. */
+.wheel .section-art { mix-blend-mode: multiply; }
+
+/* ---------- the three principles come off the rim ----------
+   They used to be three identical columns of equal height inside one hairline
+   band — the shape the parent skill bans by name, and the shape the process
+   list next door had too, which is why the two read as one continuous list.
+   The band is gone and so is the grid's equality: each principle sits at its
+   own height on a shallow arc under the wheel, with a short spoke running back
+   toward the hub. Same three facts, arranged as points on a rim instead of as
+   cells in a table. */
+.values {
+  margin-top: clamp(40px, 5.5vh, 76px);
+  display: grid; grid-template-columns: 1fr; gap: clamp(30px, 4vh, 48px);
+}
+@media (min-width: 940px) {
+  .values { grid-template-columns: repeat(3, 1fr); column-gap: clamp(28px, 3vw, 56px); align-items: start; }
+  /* the arc: the middle point rides highest, nearest the rim it came off */
+  .value[data-spoke="1"] { margin-top: clamp(26px, 3.4vh, 52px); }
+  .value[data-spoke="2"] { margin-top: 0; }
+  .value[data-spoke="3"] { margin-top: clamp(32px, 4.2vh, 64px); }
+}
+/* the spoke — a tick back toward the centre, inked when the principle arrives.
+   Lengths differ per position so the three never line up into a rule. */
+.spoke {
+  display: block; width: 1px; background: rgba(17,17,17,0.30);
+  margin-bottom: clamp(14px, 1.8vh, 22px);
+  clip-path: inset(0 0 0 0);
+  transition: clip-path 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.value[data-spoke="1"] .spoke { height: clamp(26px, 4.4vh, 62px); }
+.value[data-spoke="2"] .spoke { height: clamp(44px, 7.2vh, 104px); }
+.value[data-spoke="3"] .spoke { height: clamp(20px, 3.4vh, 48px); }
+.value[data-spoke="2"] .spoke { background: var(--vermilion); }
+.js .value:not(.is-spoked) .spoke { clip-path: inset(0 0 100% 0); }
+html.no-motion .spoke { clip-path: inset(0 0 0 0); transition: none; }
+/* Editorial trio — no boxes, no badges. Three columns inside one hairline
+   band, divided by thin rules like a magazine colophon; each principle is a
+   big serif word with a short gold brush-breath beneath it. Quiet, printed. */
+.value { padding: 0; background: none; }
+.value h3 { font-family: "Shippori Mincho", Georgia, serif; font-size: clamp(26px, 2.6vw, 36px); font-weight: 700; line-height: 1.16; letter-spacing: 0.01em; }
+.value h3::after { content: ""; display: block; width: 38px; height: 2px; margin-top: 14px;
+  background: linear-gradient(90deg, var(--vermilion-deep), rgba(191,50,24,0)); }
+/* The hover growth is gone. A .value is not a link and never was, so a mark
+   that reacted to the pointer and did nothing on click was the interface
+   telling a small lie — seven of them on this page, and the one persona who
+   tests everything found all seven. Affordance has to mean something. */
+.value p { margin-top: 16px; font-size: 18px; line-height: 1.66; color: var(--ink-2); max-width: 32ch; }
+
+/* ---------- 8 · process ---------- */
+.process { max-width: var(--maxw); margin: 0 auto; }
+.process .display { margin-top: 24px; line-height: 1.0; }
+/* ---------- THE EMAKI ----------
+   An emaki is a Japanese handscroll, and a handscroll is not read down — it is
+   unrolled sideways, one scene at a time, at the reader's own pace. This deck
+   spent nine screens going in one direction with one motion, and the fix for
+   "everything feels flat" was never more decoration on a vertical stack; it was
+   to make one section move differently.
+   So the four stages stop being four rows in a table and become four panels on
+   a scroll that opens as you push into it. It is the only pinned section on the
+   page besides the hero — the guidance is one or two per page and the hero is
+   already sticky, so this spends the last of that budget on the one section
+   whose content is literally a sequence.
+   THE DEFAULT IS A NATIVE SWIPE ROW, not a broken pin: overflow-x on the track
+   means no-JS, reduced-motion and every phone get a row you drag with a thumb,
+   which is the same gesture and none of the cost. The pin is layered on top
+   only where it is an improvement. */
+.emaki {
+  margin-top: clamp(48px, 7vh, 90px);
+  /* full-bleed: the scroll runs off both edges of the paper the way a handscroll
+     runs off the table, so it never reads as a widget parked in a column */
+  width: 100vw; margin-left: calc(50% - 50vw);
+  /* the right inset clears the fixed tate rail — measured, the last panel's
+     title was running under it */
+  padding-left: var(--pad); padding-right: clamp(72px, 9vw, 150px);
+  display: flex; align-items: center; min-height: 44vh;
+  overflow-x: auto; overflow-y: hidden;
+  scrollbar-width: none; -ms-overflow-style: none;
+  scroll-snap-type: x proximity;
+  /* THE GUTTER, OR THE SNAP EATS IT. `scroll-snap-align: start` aligns a panel
+     to the SNAPPORT, and the snapport is the scrollport — the padding box —
+     unless scroll-padding says otherwise. So the browser rested this track at
+     scrollLeft: 18, exactly cancelling the padding-left above, and panel 01 sat
+     flush against the edge of the screen with zero margin while every other
+     block on the page kept its --pad. Measured on a 375px phone: item 1 left
+     edge at x=0, the "01" and its rule clipped by the viewport.
+     Matching the scroll-padding to the padding puts the snap where the gutter
+     is, so the resting position is 0 and the panel lines up with the column. */
+  scroll-padding-left: var(--pad);
+  overscroll-behavior-x: contain;
+}
+.emaki::-webkit-scrollbar { display: none; }
+/* once the pin is running the track is driven by scroll position, so the
+   element must stop being a scroller or the two fight each other */
+html.emaki-pinned .emaki { overflow: hidden; scroll-snap-type: none; }
+.steps {
+  list-style: none; display: flex; flex-wrap: nowrap;
+  width: max-content; align-items: stretch;
+  gap: clamp(20px, 2.6vw, 40px);
+}
+/* A FOURTH COLUMN, and it is the section's mechanic.
+   The rows used to be `92px | 230px | 1fr`, which left 360px of empty paper —
+   28% of the row — under a rule that ran the full width. A ruled table whose
+   rules extend a third of a screen past their content is the "looks like AI"
+   symptom that is always alignment, never ornament.
+   Filling it with more words would have been the wrong answer; the steps are
+   already the right length. It gets a brush stroke instead, one per step,
+   inked left to right as the row arrives — the same generated brush and the
+   same clip-path wipe as the shelf's rule, which is the only other place on
+   the site where a mark draws itself. That is what makes it read as the same
+   hand rather than as a second idea: the deck had one bespoke mechanic in
+   nine screens, and this is the second, built from material already here. */
+/* Each stage is a PANEL now, not a row: the number sits at the top like a
+   scene mark, the verb takes the display size the section deserves, and the
+   brush runs along the foot as the join to the next scene. Panels are sized so
+   the next one is always half-visible — that sliver is what tells you the
+   scroll continues sideways, and it is doing the job an arrow or a "swipe"
+   label would otherwise have to do badly. */
+.steps li {
+  /* wide enough that the track is ~1.8x the viewport: the travel IS the
+     mechanic, and at 34vw it only had 512px to give, which reads as a nudge
+     rather than a scroll opening */
+  flex: 0 0 clamp(268px, 44vw, 600px);
+  scroll-snap-align: start;
+  display: flex; flex-direction: column;
+  padding: clamp(26px, 3.4vh, 40px) 0 clamp(22px, 2.6vh, 32px);
+  border-top: 1px solid rgba(17,17,17,0.16);
+}
+.steps li .step-n { margin-bottom: clamp(26px, 4vh, 54px); }
+.steps li .step-t { margin-bottom: 14px; }
+.steps li .step-d { margin-bottom: auto; max-width: 30ch; }
+.step-mark {
+  display: block; height: 16px; width: 100%;
+  margin-top: clamp(30px, 4vh, 52px);
+  background: rgba(17,17,17,0.30);
+  -webkit-mask: url("assets/brush-rule.svg?v=2") right center / 100% 100% no-repeat;
+          mask: url("assets/brush-rule.svg?v=2") right center / 100% 100% no-repeat;
+  clip-path: inset(0 0 0 0);
+  transition: clip-path 0.85s cubic-bezier(0.22, 1, 0.36, 1);
+}
+/* On the phone this transition IS the stroke laying itself down, one trigger
+   per row. Under the desktop pin it is the opposite of that: the scrub writes a
+   fresh inline clip-path on every frame, and each write restarts an 0.85s
+   transition, so a tween declared `ease: "none"` renders eased and a beat
+   behind the scroll it is supposed to be locked to. Scoped to the pinned state
+   only — the mobile mechanic keeps its transition. Paired with the teardown in
+   main.js: without that, a tablet rotated to portrait would keep this rule and
+   lose the stroke animation entirely. */
+html.emaki-pinned .step-mark { transition: none; }
+/* staged only when the script is alive to release it, and scoped to
+   :not(.is-inked) so the release rule has nothing left to out-rank — the same
+   specificity trap the shelf head fell into twice */
+.js .steps li:not(.is-inked) .step-mark { clip-path: inset(0 100% 0 0); }
+html.no-motion .step-mark { clip-path: inset(0 0 0 0); transition: none; }
+/* each stroke is a touch longer than the one above it, so the four together
+   read as a stroke gathering weight rather than four copies of one rule */
+.steps li:nth-child(1) .step-mark { opacity: 0.55; }
+.steps li:nth-child(2) .step-mark { opacity: 0.7; }
+.steps li:nth-child(3) .step-mark { opacity: 0.85; }
+.steps li:nth-child(4) .step-mark { opacity: 1; background: var(--vermilion); }
+@media (max-width: 900px) {
+  .steps li { flex-basis: clamp(232px, 74vw, 320px); }
+  .step-mark { height: 12px; margin-top: 22px; }
+}
+.step-n { font-size: 14px; font-weight: 700; color: var(--accent-ink); letter-spacing: 0.08em; }
+.step-t { font-family: "Shippori Mincho", Georgia, serif; font-size: clamp(26px, 3.3vw, 48px); font-weight: 700; line-height: 1.12; }
+.step-d { font-size: 18px; line-height: 1.62; color: var(--ink-2); max-width: 46ch; }
+
+/* The stats band (.stats/.stat-n/.stat-inf/.stat-l) was removed from the deck
+   and its rules are gone with it — they matched nothing in either page. */
+
+/* ---------- 10 · final ---------- */
+.final { position: relative; max-width: var(--maxw); margin: 0 auto; text-align: center; min-height: 88svh; display: flex; flex-direction: column; justify-content: center; overflow: hidden; }
+.final-branch { position: absolute; top: 4%; right: -4%; width: clamp(180px, 26vw, 380px); opacity: 0.7; z-index: 0; transform: scaleX(-1); }
+.final .display, .final .cta, .final .eyebrow, .final-lead { position: relative; z-index: 2; }
+.final .display { line-height: 1.0; font-size: clamp(42px, 6.7vw, 96px); }
+/* UFUKTA — the closing note: kicker, one line of intent, then the two ways out */
+.final .eyebrow { display: inline-flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 24px; }
+.final .eyebrow .growing-mark { width: 30px; height: 30px; border-width: 1.5px; font-size: 14px; letter-spacing: 0; }
+.final-lead { margin: 26px auto 0; max-width: 46ch; font-size: clamp(16px, 1.8vw, 20px); font-weight: 500; color: var(--ink-2); }
+.final .cta { margin-top: clamp(34px, 5vh, 54px); }
+.cta { margin-top: 42px; display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; }
+
+/* ---------- footer — the page ends where it started ----------
+   It used to end on plain white with a hairline and no mark at all: the last
+   visual event on a 9.9-screen page was the shelf's black wall at 31% scroll,
+   and everything after it was one uninterrupted sheet. Peak-end says the close
+   is half of what gets remembered, and the close was nothing.
+   It is the ink wall now, with the seal stamped on it — the third and last
+   spend of the page's emphasis, using the mark that already opens the site in
+   the tate rail and the hero foot and then disappeared for 6,000px. Nothing
+   here is a new material: same wall as the shelf, same 二一七, same red. */
+.foot {
+  /* z-index: 2 IS LOAD-BEARING, and it used to be inherited from
+     `main > *:not(.hero-stage)`. When the footer moved out of <main> to give the page
+     a real `contentinfo` landmark, it kept position:relative and silently lost
+     the z-index — and z-index:auto means no stacking context, so `.on-ink::before`
+     at z-index:-1 escaped the footer entirely and was painted behind the body's
+     own --paper background. The ink wall was still being drawn; it was drawn
+     under the page. Result on the live site: white type on white, the wordmark
+     invisible, the seal floating on nothing. Measured: position relative,
+     z-index "auto", pseudo background rgb(17,17,17), colour rgb(255,255,255). */
+  position: relative; z-index: 2;
+  padding: clamp(76px, 11vh, 130px) var(--pad) clamp(48px, 7vh, 78px);
+  max-width: var(--maxw); margin: 0 auto;
+  display: flex; align-items: flex-start; justify-content: space-between;
+  gap: clamp(36px, 6vw, 80px); flex-wrap: wrap;
+  border-top: 0;
+}
+.foot-logo { width: clamp(120px, 16vw, 180px); height: auto; /* the brushed mark is black ink on transparent — invert it onto the wall */ filter: invert(1); }
+/* the seal, stamped bottom-right the way a print is signed */
+.foot-seal {
+  position: absolute; right: var(--pad); bottom: clamp(30px, 4.5vh, 54px);
+  display: grid; place-items: center; width: 62px; height: 62px; border-radius: 10px;
+  background: var(--vermilion); color: #fff;
+  font-family: "Shippori Mincho", serif; font-weight: 700; font-size: 15px;
+  line-height: 1.05; text-align: center; letter-spacing: 0.06em;
+  transform: rotate(-5deg); pointer-events: none; user-select: none;
+  box-shadow: 0 10px 26px rgba(0,0,0,0.45);
+}
+/* link columns — same quiet meta voice, headed by a small label */
+.foot-nav { display: flex; gap: clamp(40px, 6vw, 90px); }
+.foot-col { display: flex; flex-direction: column; gap: 5px; font-size: 15px; }
+.foot-h { font-family: "Shippori Mincho", Georgia, serif; font-weight: 700; font-size: 15px; color: var(--paper); margin-bottom: 8px; }
+/* 0.62 white on #111 is 8.1:1; hover lifts to full paper rather than to a red
+   that would only measure 4.7 and lose against its own resting state */
+.foot-col a { display: inline-flex; align-items: center; min-height: 44px; color: rgba(255,255,255,0.62); transition: color 0.25s ease; }
+.foot-col a:hover { color: var(--paper); }
+.foot-meta { display: flex; flex-direction: column; gap: 6px; font-size: 15px; color: rgba(255,255,255,0.62); text-align: right; }
+.foot-meta a { display: inline-block; padding: 5px 0; color: rgba(255,255,255,0.62); transition: color 0.25s ease; }
+.foot-meta a:hover { color: var(--paper); }
+@media (max-width: 700px) {
+  .foot-seal { position: static; margin-top: 28px; transform: rotate(-5deg); }
+}
+
+/* ---------- touch targets ----------
+   Measured on a 390px phone, not assumed: the e-mail line came out 208x35 and
+   the hero's ink toy 163x41, both under the 44px a finger needs. The type and
+   the spacing are untouched — only the hit box grows, which is the one mobile
+   correction this design has ever accepted. Scoped to `hover: none` so the
+   desktop rhythm, where a pointer only needs 24px, stays exactly as drawn. */
+@media (hover: none) {
+  .foot-meta a { min-height: 44px; display: inline-flex; align-items: center; }
+  .foot-r { min-height: 44px; }
+  /* the drawer's language switch is two letters wide — 25px measured — so the
+     height alone was never going to carry it */
+  .nav-links .nav-alt { min-width: 44px; }
+}
+
+/* ---------- responsive ---------- */
+@media (max-width: 820px) {
+  /* `.steps li` became a flex column when the emaki track was built; the grid
+     properties that used to shape it here (grid-template-columns, grid-row-gap
+     and .step-d's grid-column) have had no effect since and are gone. */
+  .foot { flex-direction: column; align-items: center; text-align: center; }
+  .foot-nav { justify-content: center; text-align: left; }
+  .foot-meta { text-align: center; }
+  /* `.craft::after` is never generated — it has no `content`, measured as
+     `content: "none"` live. It was a white scrim over the retired zen.webp
+     background; .craft is an ink wall now, so a white 60-92% veil would be
+     wrong even if it did render. Removed rather than completed. */
+}
+
+/* ---------- reduced motion ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .marquee-row { animation: none; }
+  .brighten .w { color: var(--ink); }
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
+
+/* ============================================================
+   cross-browser + responsive hardening
+   ============================================================ */
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+html, body { max-width: 100%; overflow-x: hidden; overflow-x: clip; }
+
+/* small-viewport-unit fallback (older iOS / Android) */
+@supports not (height: 100svh) {
+  .hero { min-height: 100vh; }
+    .craft { min-height: 92vh; }
+  .final { min-height: 88vh; }
+}
+
+/* ---------- tablets & phones ---------- */
+@media (max-width: 820px) {
+  .hero { padding-top: clamp(104px, 15vh, 150px); }
+  .section-seal { font-size: clamp(80px, 22vw, 180px); }
+  /* one centred column already, so the phone only needs to stop reserving a
+     screen for a panel that no longer exists.
+     THE RULE THIS COMMENT DESCRIBES WAS NEVER WRITTEN — the block sat empty
+     under it while `min-height: 92svh` / `88svh` stayed in force. Measured on a
+     375x812 phone: .craft held 217px of content inside a 747px box and .final
+     held 330px inside 715px, so each band cost most of a screen of scrolling
+     for one headline and one paragraph.
+     .craft's height was composed around a side panel and a plate that are both
+     gone, so off it comes; the padding decides instead, which on phones is the
+     density block further down, already tuned for exactly this.
+     .final KEEPS ITS RESERVED HEIGHT, and the reason is worth writing down
+     because it does not look like a height problem. That section centres its
+     column (`justify-content: center`) while .final-branch is pinned `top: 4%`
+     of the SECTION. The tall box is what pushes the column down clear of the
+     branch — measured at 375, 88svh puts the copy 190px from the top and the
+     branch ends at 166px, so the clearance is 24px and deliberate. Dropped to
+     min-height 0 the section came in at 489px, the copy rose to 78px, and the
+     branch landed across "UFUKTA" and the top of the headline. So this one is
+     not reserved space, it is the composition.
+     The hero keeps its 100svh too: that one IS the screen. */
+  .craft { min-height: 0; }
+}
+
+/* ---------- phones ---------- */
+@media (max-width: 600px) {
+  /* ONE LINE PER .hero-line IS THE LAW HERE. Each is a block and the design is
+     two of them; when one wraps you get a three-line stack broken mid-phrase,
+     and on this hero the extra line lands black-on-black across the mountain.
+     Every size below is measured against that limit, per width, per language —
+     re-measure before touching any of them. */
+  /* TWO EXTRA POINTS OF SIZE, PAID FOR HONESTLY. The wrap limit is a budget:
+     size × line-length must fit the measure. Growing the type therefore means
+     growing the measure or shortening the line, so the head bleeds 8px into
+     each gutter (355px of measure at 375 — display type reads fine closer to
+     the edge than body text, and it is still 10px clear of the glass) and the
+     tracking tightens 6 thousandths, which is invisible at this scale but
+     buys ~2% of line. Both are scoped to this block: the desktop head keeps
+     its own measure and tracking. */
+  .hero-head {
+    font-size: clamp(29px, 9.6vw, 54px); line-height: 1.04; letter-spacing: -0.03em;
+    margin-inline: -8px;
+  }
+  /* THE TURKISH PAGE RUNS BIGGER, because its sentence is shorter. The vw
+     above is set by the ENGLISH second line ("We build a product."), the
+     proportionally longest line on either page; Turkish's longest wraps more
+     than a vw later. One clamp for both languages was quietly costing the TR
+     page 13% of its headline for a wrap that can only happen in English.
+     Both values are measured against the widened measure and the tightened
+     tracking, at 320/340/360/375/390/412/430, and sit at 92-94% of the wrap
+     limit everywhere — re-measure before touching either. */
+  html[lang="tr"] .hero-head { font-size: clamp(30px, 11vw, 56px); }
+  .btn { padding: 12px 20px; font-size: 13px; }
+  .statement .display, .studio .display, .process .display, .craft .display { font-size: clamp(33px, 9.2vw, 54px); }
+  .final .display.big { font-size: clamp(37px, 10.6vw, 58px); }
+  .brighten { font-size: clamp(20px, 5.8vw, 29px); max-width: 100%; }
+  .marquee-row span { font-size: 15px; }
+  .marquee-row { gap: 20px; }
+  .values { gap: 22px; }
+  .foot-logo { width: 128px; }
+}
+/* The thinnest wrap margins live at the narrow end (4.9% at 320 against 5.5-6.5%
+   everywhere else) — and 320-class devices are old iPhones, i.e. the one
+   rasterizer this was NOT measured on. Half a vw of insurance there only. */
+@media (max-width: 345px) {
+  .hero-head { font-size: clamp(29px, 9.3vw, 54px); }
+  html[lang="tr"] .hero-head { font-size: clamp(30px, 10.6vw, 56px); }
+}
+
+/* ---------- very small ---------- */
+@media (max-width: 380px) {
+  :root { --pad: 18px; }
+  /* THE FLAT 29px THAT WAS HERE IS GONE. It was measured against the OLD hero
+     copy — the note above it ("33 put it 37px over and wrapped it") no longer
+     describes this sentence; re-measured on the current one, 320px holds a
+     single line up to 35px. Because the rule was a fixed size and this query is
+     `max-width: 380`, it did not just protect 320 — it flattened 360 and 375 to
+     29px too, and 375 is one of the commonest phone widths there is. That put
+     the H1 below every H2 on the page and left a 29 → 35.1px cliff across the
+     375/390 boundary, which the clamp above never had.
+     The clamp handles the whole range on its own: 9vw is 28.8px at 320, so the
+     29px floor still catches the narrow end exactly as intended. */
+  .brand-mark { height: 26px; }
+  /* and the shorter mark is what took the capsule under a finger: 26 + 8 + 8
+     came out 42px measured, against the 44 the touch-target block upholds
+     everywhere else. One pixel of padding a side, and the mark does not move. */
+  .brand { padding-block: 9px; }
+}
+
+/* ================= PHONE DENSITY =================
+   Measured problem: at 390px the page ran 10.7 screens and every section
+   carried 127px of padding top AND bottom, so each one arrived as its own
+   full screen of type — "wall after wall". The poster voice stays (hero and
+   section headlines keep their scale); what changes is that PROSE behaves
+   like prose: the big Mincho paragraph came in at 23px on a 29-character
+   measure, which turned 188 characters into ~7 stacked lines.
+   ================================================= */
+@media (max-width: 600px) {
+  /* generous but not a screen per gap — ~2 screens of scroll come back */
+  section { padding: clamp(66px, 9.5vh, 92px) var(--pad); }
+  /* the shelf gap follows its parent down here too — same three quarters of
+     whatever `section` is, so the phone keeps the density decision above
+     instead of inheriting a desktop number that would exceed it */
+  .slots { margin-top: clamp(50px, 7.125vh, 69px); }
+  /* image-led sections already breathe through their artwork */
+  .craft { padding-block: clamp(76px, 11vh, 104px); }
+  .hero { padding-top: clamp(96px, 14vh, 132px); }
+
+  /* the scroll-brightening paragraph: still Mincho, now a readable measure
+     instead of a narrow column of giant words */
+  .brighten { font-size: clamp(18.5px, 5vw, 22px); line-height: 1.5; max-width: 34ch;
+    margin-top: clamp(24px, 3.6vh, 38px); }
+
+  /* one comfortable reading size for every supporting paragraph, so the page
+     stops alternating between shouting and whispering */
+  .craft-lead, .final-lead { font-size: 17.5px; line-height: 1.6; max-width: 36ch; }
+  .value p, .step-d { font-size: 17px; line-height: 1.6; }
+
+  /* section markers and captions sit closer to what they label */
+  .eyebrow { margin-bottom: 14px; }
+  .section-art { margin-top: 26px; }
+  .section-art figcaption { margin-top: 12px; }
+
+  /* the three principles read as a short list, not three more screens */
+  .value { padding: 26px 0; }
+  .steps li { padding: 20px 0; }
+
+  /* comfortable, thumb-sized controls (was 13px type in a 44px pill) */
+  .btn { padding: 13px 22px; font-size: 14px; min-height: 46px; }
+}
+
+/* Short windows — a laptop with browser chrome, a tablet in landscape. The
+   disc is sized off the SHORTER axis, so a laptop in a short window keeps it in
+   proportion on its own — what still has to give is the type, which is sized
+   off width and would otherwise leave the disc no field to sit in. */
+@media (max-height: 660px) and (min-width: 701px) {
+  .hero { padding: clamp(74px, 12vh, 120px) var(--pad) clamp(84px, 20vh, 170px); }
+  .hero-head { font-size: clamp(34px, 5.4vw, 72px); }
+}
+/* ...AND NOT A STEP WHILE THE WINDOW MOVES. As a media query alone the rule
+   above is a step: a window dragged across 660px of height watched the headline
+   lose a third of its size in one frame (108 -> 72px at 1440 wide). main.js
+   writes --tall — 0 at 650px of height or less, 1 at 670 or more, a line
+   between — and these blend the short values into the full ones across that
+   20px band. Every term is the exact clamp() of the rule it stands for (the
+   full ones are .hero / .hero-head above, and the 820px block's for the
+   narrower windows), so outside the band nothing changes; without the script
+   (html.tall-js) the step above stays. */
+@media (min-width: 701px) {
+  html.tall-js .hero-head {
+    font-size: calc(var(--tall) * clamp(40px, 7.5vw, 112px) + (1 - var(--tall)) * clamp(34px, 5.4vw, 72px));
+  }
+}
+@media (min-width: 821px) {
+  html.tall-js .hero {
+    padding-top: calc(var(--tall) * clamp(96px, 13vh, 172px) + (1 - var(--tall)) * clamp(74px, 12vh, 120px));
+    padding-bottom: calc(var(--tall) * min(clamp(126px, 17vh, 200px), max(10.63vw, 108.3px)) + (1 - var(--tall)) * clamp(84px, 20vh, 170px));
+  }
+}
+@media (min-width: 701px) and (max-width: 820px) {
+  html.tall-js .hero {
+    padding-top: calc(var(--tall) * clamp(104px, 15vh, 150px) + (1 - var(--tall)) * clamp(74px, 12vh, 120px));
+    padding-bottom: calc(var(--tall) * clamp(84px, 16svh, 168px) + (1 - var(--tall)) * clamp(84px, 20vh, 170px));
+  }
+}
+
+/* A window being dragged: every transition off until it rests (main.js sets
+   and clears the class). A breakpoint crossed mid-drag used to start the nav
+   capsule's fade, so its links dissolved and returned while the edge moved. */
+html.resizing *, html.resizing *::before, html.resizing *::after { transition: none !important; }

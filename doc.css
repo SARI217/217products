@@ -1,0 +1,107 @@
+/* ============================================================
+   217 Products — document pages (privacy, terms)
+   ------------------------------------------------------------
+   A SEPARATE, SMALL STYLESHEET, on purpose. style.css is ~110 KB of
+   scroll choreography for a nine-screen poster; a legal page needs a
+   column of text and nothing else, and loading the whole deck here would
+   pull GSAP-shaped rules that have nothing to render.
+   Same faces, same palette, same measure discipline as the site — read
+   off style.css's :root so the two never drift into different brands.
+   No script tag on these pages at all: the CSP above sets script-src
+   'none', which is the strongest honest claim a privacy page can make.
+   ============================================================ */
+@font-face {
+  font-family: "Manrope";
+  src: url("assets/fonts/manrope-var.woff2?v=3") format("woff2");
+  font-weight: 400 800; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: "Shippori Mincho";
+  src: url("assets/fonts/shippori-800.woff2?v=3") format("woff2");
+  font-weight: 800; font-style: normal; font-display: swap;
+}
+
+:root {
+  --paper: #FFFFFF;
+  --ink: #111111;
+  --ink-2: #575757;
+  --ink-dim: #767676;      /* 4.54:1 on white — the AA-safe grey */
+  --vermilion-deep: #BF3218;
+  --accent-ink: #A82C15;
+  --rule: rgba(17, 17, 17, 0.14);
+  --pad: clamp(20px, 5vw, 32px);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+body {
+  background: var(--paper); color: var(--ink);
+  font-family: "Manrope", system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-weight: 400; line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+}
+::selection { background: var(--vermilion-deep); color: var(--paper); }
+a { color: inherit; text-underline-offset: 0.22em; text-decoration-thickness: 1px; }
+a:hover { color: var(--accent-ink); }
+:focus-visible { outline: 2px solid var(--vermilion-deep); outline-offset: 3px; border-radius: 2px; }
+
+.doc {
+  /* NOT `ch`, AND THAT UNIT WAS THE WHOLE LAYOUT SHIFT. `ch` is the advance of
+     the "0" glyph in the element's CURRENT font, so the container measured one
+     width in the fallback face and a different one the moment the webfont
+     swapped — the whole column re-laid out under the reader. Measured before
+     this change, twelve runs across three viewports: /gizlilik at 1024x768 hit
+     CLS 0.3185, four times Google's 0.1 "good" line and past the 0.25 "poor"
+     one, and every single shift traced to one node — MAIN.doc going 587 -> 664.
+     Preloading the fonts (added earlier) treated the symptom by shortening the
+     window; it could not remove the re-measure. 664px is what 68ch resolved to
+     in Shippori/Manrope at this size, so the measure is unchanged to the eye
+     and can no longer move. */
+  max-width: 664px; margin: 0 auto;
+  padding: clamp(48px, 9vh, 96px) var(--pad) clamp(64px, 12vh, 120px);
+}
+.doc-eyebrow {
+  font-size: 13px; font-weight: 700; letter-spacing: 0.3em;
+  text-transform: uppercase; color: var(--accent-ink); margin-bottom: 18px;
+}
+.doc-eyebrow a { text-decoration: none; }
+h1 {
+  font-family: "Shippori Mincho", Georgia, serif; font-weight: 800;
+  font-size: clamp(34px, 7vw, 56px); line-height: 1.08; letter-spacing: -0.02em;
+  margin-bottom: 14px; text-wrap: balance;
+}
+.doc-lead {
+  font-size: clamp(17px, 2.2vw, 19px); color: var(--ink-2);
+  margin-bottom: clamp(32px, 5vh, 52px);
+  padding-bottom: clamp(24px, 4vh, 36px); border-bottom: 1px solid var(--rule);
+}
+h2 {
+  font-family: "Shippori Mincho", Georgia, serif; font-weight: 800;
+  font-size: clamp(21px, 3vw, 26px); line-height: 1.25; letter-spacing: -0.01em;
+  margin: clamp(34px, 5vh, 50px) 0 12px;
+}
+p, li { font-size: 16px; color: var(--ink-2); }
+p + p { margin-top: 14px; }
+ul { margin: 12px 0 0; padding-left: 1.1em; }
+li { margin-bottom: 8px; }
+li::marker { color: var(--vermilion-deep); }
+code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.88em; background: rgba(17, 17, 17, 0.05);
+  padding: 0.12em 0.38em; border-radius: 4px; color: var(--ink);
+}
+.doc-foot {
+  display: flex; flex-wrap: wrap; gap: 12px clamp(18px, 4vw, 34px);
+  margin-top: clamp(48px, 8vh, 80px); padding-top: clamp(24px, 4vh, 32px);
+  border-top: 1px solid var(--rule);
+  font-size: 15px; font-weight: 600;
+}
+/* 44px tall like every other target on the site — measured at 26 before, the
+   height of the type alone, on the one row a phone reader uses to leave */
+.doc-foot a { text-decoration: none; display: inline-flex; align-items: center; min-height: 44px; }
+.doc-foot a:hover { text-decoration: underline; }
+.doc-date { margin-top: 18px; font-size: 13px; color: var(--ink-dim); }
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
+}
