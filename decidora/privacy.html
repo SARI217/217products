@@ -6,7 +6,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'none'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:; connect-src 'none'; object-src 'none'; frame-src 'none'; base-uri 'self'; form-action 'none'">
   <meta name="referrer" content="strict-origin-when-cross-origin">
   <title>Decidora Gizlilik Politikası — 217 Products</title>
-  <meta name="description" content="Decidora Android uygulamasının gizlilik politikası: uygulama hiçbir kişisel veri toplamaz, göndermez ve paylaşmaz.">
+  <meta name="description" content="Decidora Android uygulamasının gizlilik politikası: kararlarınız ve çarklarınız cihazınızda kalır; çökme raporları ve kullanım istatistikleri rastgele bir kimlikle gider ve ayarlardan kapatılabilir.">
   <link rel="canonical" href="https://217products.com/decidora/privacy.html">
   <meta name="robots" content="index, follow">
   <link rel="icon" href="/favicon.ico" sizes="any">
@@ -26,85 +26,234 @@
       <a href="#english">below</a>.</p>
 
     <h2>Kısaca</h2>
-    <p>Decidora <strong>hiçbir kişisel veri toplamaz, göndermez ve paylaşmaz.</strong> Hesap
-      istemez, reklam göstermez, analitik veya çökme raporlama aracı içermez. Uygulamanın
-      internet izni yoktur; kendi başına hiçbir sunucuya bağlanamaz. İstediği tek izin,
-      Decidora Plus'ın satın alması için Google Play'in satın alma iznidir.</p>
+    <p>Kararlarınız, çarklarınız ve seçenekleri, sayacınız ve ayarlarınız <strong>yalnızca
+      cihazınızda kalır ve hiçbir yere gönderilmez.</strong> Decidora hesap istemez, reklam
+      göstermez ve reklam kimliğinizi kullanmaz. 2.5 sürümünden itibaren, uygulamayı düzeltip
+      geliştirebilmemiz için iki tür teknik veri gönderilebilir: <strong>çökme raporları</strong>
+      ve <strong>kullanım istatistikleri</strong>. İkisi de rastgele bir kimlikle gider, adınızı
+      ya da uygulamaya yazdığınız hiçbir şeyi içermez ve ikisini de
+      <strong>Ayarlar → Verilerim</strong> bölümünden kapatabilirsiniz. Decidora Plus'ı satın
+      alırsanız satın almanın kaydı ayrıca hizmet sağlayıcımız RevenueCat'te tutulur.</p>
 
     <h2>Cihazınızda kalanlar</h2>
     <p>Karar defteriniz, kaydettiğiniz çarklar ve seçenekleri, yazı tura sayacı ve ayarlarınız
-      yalnızca telefonunuzda, uygulamanın kendi depolama alanında tutulur. Bu verilere bizim
-      erişimimiz yoktur. Uygulama Android yedeklemesinin <strong>dışında</strong> tutulur: veriler
-      Google Drive yedeğine veya cihazdan cihaza aktarıma dahil edilmez. Defteri, kayıtlı
-      çarkları ve sayacı uygulama içinden Ayarlar → Verilerim bölümünde silebilirsiniz;
-      uygulamayı kaldırdığınızda hepsi silinir.</p>
+      yalnızca cihazınızda, uygulamanın kendi depolama alanında tutulur. Bu verilere bizim
+      erişimimiz yoktur ve aşağıdaki raporların hiçbirine eklenmezler. Uygulama Android
+      yedeklemesinin <strong>dışında</strong> tutulur: veriler Google Drive yedeğine veya
+      cihazdan cihaza aktarıma dahil edilmez. Defteri, kayıtlı çarkları ve sayacı uygulama
+      içinden Ayarlar → Verilerim bölümünde silebilirsiniz; uygulamayı kaldırdığınızda hepsi
+      silinir.</p>
+
+    <h2>Çökme raporları</h2>
+    <p>Uygulama beklenmedik şekilde kapandığında, yanıt vermez hâle geldiğinde ya da kodunda
+      bir hata oluştuğunda, sorunu bulup düzeltebilmemiz için teknik bir rapor
+      <strong>Google Firebase Crashlytics</strong> aracılığıyla bize iletilir. Rapor hatanın
+      oluştuğu kod satırlarını, cihaz modelini, Android ve uygulama sürümünü, bellek ve disk
+      durumunu, ekran yönünü, o an hangi aracın açık olduğunu ve Crashlytics'in rastgele kurulum
+      kimliğini içerir. Hata mesajları gönderilmeden önce süzülür: kullanıcının yazdığı metni
+      taşıyabilecek kısımlar çıkarılır. Çark seçenekleriniz, kayıtlı çarklarınızın adları ve
+      kararlarınız bu raporlara asla eklenmez.</p>
+    <p>Raporlar yalnızca Play Store'dan indirdiğiniz yayın sürümünde gönderilir ve Firebase
+      tarafında 90 gün saklandıktan sonra silinir. Ayarlar → Verilerim →
+      <strong>Çökme raporları</strong> ile istediğiniz zaman kapatabilirsiniz; kapattığınızda
+      gönderilmemiş raporlar da silinir.</p>
+
+    <h2>Kullanım istatistikleri</h2>
+    <p>Hangi araçların kullanıldığını ve nerede zorlanıldığını anlamak için teknik olaylar
+      <strong>Google Analytics for Firebase</strong> aracılığıyla toplanır: hangi aracın
+      açıldığı ve kullanıldığı; zarda kalıp ve zar sayısı; çarkta kip, seçenek
+      <em>sayısı</em> ve çark hazır çarklardan biriyse hangisi olduğu (ör. “ne yesek”);
+      parmak seçicide kip ve parmak sayısı; Plus sayfasının açılması ve satın almanın sonucu;
+      sonuç paylaşımı; zorunlu güncelleme ekranı; puan kartı; açılış gösterisinin izlenip
+      izlenmediği. Bunlarla birlikte uygulamanın kendiliğinden saydığı ilk açılış, oturum ve
+      güncelleme olayları; cihaz türü (telefon ya da tablet), Android sürümü, uygulama sürümü,
+      dil, IP adresinden çıkarılan ülke ve bölge (şehir değil; IP adresi Google Analytics'te
+      saklanmaz) ve uygulamaya özel rastgele bir kurulum kimliği işlenir.</p>
+    <p>Çark seçenekleriniz, kendi çarklarınızın adları ve kararlarınızın sonuçları bu verilere
+      <strong>asla</strong> eklenmez: olayların taşıyabileceği değerler yazılımda önceden
+      belirlenmiş sabit seçenekler ve sayılarla sınırlıdır, serbest metin gönderilmez. Reklam
+      kimliği ve Android kimliği toplanmaz; Google sinyalleri ve reklam kişiselleştirmesi
+      kapalıdır, veriler reklam için kullanılmaz.</p>
+    <p><strong>AB, Avrupa Ekonomik Alanı, Birleşik Krallık ve İsviçre'de</strong> kullanım
+      istatistikleri varsayılan olarak <strong>kapalıdır</strong> ve yalnızca Ayarlar →
+      Verilerim → <strong>Kullanım istatistikleri</strong> ile siz açarsanız toplanır. Bu bölgeyi
+      cihazın SIM kartından, bağlı olduğu şebekeden ve dil/bölge ayarlarından anlarız; bunlardan
+      biri bile bu bölgeyi gösteriyorsa istatistik kapalı başlar. Diğer bölgelerde varsayılan
+      olarak açıktır. Her bölgede aynı anahtarla istediğiniz zaman kapatabilirsiniz;
+      kapattığınızda toplama durur ve cihazınızdaki ölçüm kimliği silinir. Veriler yalnızca yayın
+      sürümünde toplanır ve Google Analytics'te 2 ay saklandıktan sonra silinir.</p>
+
+    <h2>Decidora Plus ve RevenueCat</h2>
+    <p>Satın almayı seçerseniz ödeme Google Play'in kendi penceresinde yapılır; ödeme
+      bilgileriniz bize ulaşmaz. Uygulama Google Play'e fiyatı ve Plus'a sahip olup olmadığınızı
+      sorar; telefonunuzda Plus'ın açık olup olmadığını ve son görülen fiyatı tutar.</p>
+    <p>Satın almanın kaydı, satın almaları doğrulayıp kaydetmek, iadeleri görmek ve gelir
+      raporlarını hazırlamak için hizmet sağlayıcımız <strong>RevenueCat</strong>'e de iletilir:
+      rastgele bir müşteri kimliği, Google Play satın alma belirteci ve sipariş numarası, ürün,
+      fiyat ve para birimi, satın alma tarihi, mağaza ülkesi, uygulama ve Android sürümü ile
+      dil. Kullanım istatistikleri açıksa uygulama açıldığında da RevenueCat'e aynı rastgele
+      kimlikle uygulama sürümü, ülke ve Android sürümü bildirilir (satın alma oranını
+      hesaplamak için); istatistikler kapalıysa ve Plus'ınız yoksa RevenueCat'e hiçbir şey
+      gitmez. Satın alma geçmişiniz ayrıca Google hesabınızda, Google Play'de durur.</p>
 
     <h2>Google Play ile ilişkisi</h2>
     <p>Uygulama, güncelleme kontrolü, puan kartı ve Decidora Plus'ın satın alması için
       cihazınızdaki Google Play Store uygulamasıyla konuşur. Bu işlemleri Google Play yapar ve
       Google'ın kendi <a href="https://policies.google.com/privacy">gizlilik politikasına</a>
-      tabidir; bu yolla bize herhangi bir veri gelmez. Android'in tanılama ayarı açıksa Google
-      Play, çökme istatistiklerini geliştiriciye kimliksiz olarak gösterebilir (Android vitals);
-      bu da uygulamanın değil Google Play'in hizmetidir.</p>
-    <p><strong>Decidora Plus:</strong> Satın almayı seçerseniz ödeme Google Play'in kendi
-      penceresinde yapılır; ödeme bilgileriniz bize ulaşmaz. Uygulama Google Play'e yalnızca
-      fiyatı ve Plus'a sahip olup olmadığınızı sorar; telefonunuzda Plus'ın açık olup olmadığını
-      ve son görülen fiyatı tutar. Bunlar da hiçbir yere gönderilmez. Satın alma geçmişiniz
-      Google hesabınızda, Google Play'de durur.</p>
+      tabidir. Android'in tanılama ayarı açıksa Google Play, çökme istatistiklerini
+      geliştiriciye kimliksiz olarak gösterebilir (Android vitals).</p>
 
     <h2>Sizin başlattığınız işlemler</h2>
     <p><strong>Paylaşım:</strong> Bir sonucu paylaşmayı seçerseniz görsel ve metin, Android'in
       paylaşım menüsünde seçtiğiniz uygulamaya verilir. Decidora bunu kendisi hiçbir yere
-      göndermez.</p>
+      göndermez; istatistiklere yalnızca paylaşımın yapıldığı ve hangi araçtan yapıldığı
+      girer.</p>
     <p><strong>Pano:</strong> Çarka liste yapıştırdığınızda pano yalnızca o anda okunur; metin
       çarkın seçeneklerine dönüşür ve cihazda kalır.</p>
     <p><strong>Bağlantılar:</strong> Uygulamadaki web sitesi ve mağaza bağlantıları tarayıcınızda
       veya Play Store'da açılır.</p>
 
-    <h2>Çocuklar</h2>
-    <p>Decidora, çocuklar dahil hiç kimseden kişisel veri toplamaz.</p>
+    <h2>Kullanım amaçları ve paylaşım</h2>
+    <p>Bu verileri yalnızca şunlar için kullanırız: çökme ve hataları teşhis edip düzeltmek,
+      uygulamanın hangi araçlarının ve adımlarının kullanıldığını anlayıp ürünü geliştirmek,
+      satın almaları kaydetmek ve destek taleplerinize yanıt vermek. Veriler yalnızca bizim
+      adımıza hizmet veren sağlayıcılarla paylaşılır: Google Firebase Crashlytics, Google
+      Analytics for Firebase (Google LLC) ve RevenueCat (RevenueCat, Inc.). Verileriniz
+      satılmaz, reklam için kullanılmaz ve profilleme yapılmaz. Tüm aktarımlar şifrelenir
+      (TLS).</p>
 
-    <h2>Veri sorumlusu ve haklarınız</h2>
-    <p>Decidora'nın geliştiricisi <strong>Abdullah Semih Kızılyel (217 Products)</strong>'dir
-      (Türkiye). Uygulama kişisel veri işlemediği için elimizde size ait bir kayıt bulunmaz.
-      6698 sayılı KVKK ve GDPR kapsamındaki sorularınızı aşağıdaki adrese iletebilirsiniz; en geç
-      30 gün içinde yanıtlanır.</p>
+    <h2>Veri sorumlusu</h2>
+    <p>6698 sayılı Kişisel Verilerin Korunması Kanunu (KVKK) ve GDPR kapsamında veri sorumlusu,
+      Decidora'nın geliştiricisi <strong>Abdullah Semih Kızılyel (217 Products)</strong>'dir
+      (Türkiye). Başvurular için aşağıdaki e-posta adresini kullanabilirsiniz.</p>
+
+    <h2>İşlemenin hukuki sebepleri</h2>
+    <p>Çökme raporları, uygulamanın güvenli ve kararlı çalıştırılmasındaki meşru menfaatimiz
+      için (KVKK m.5/2-f, GDPR m.6/1-f); kullanım istatistikleri AB, AEA, Birleşik Krallık ve
+      İsviçre'de onayınıza (GDPR m.6/1-a — anahtarı açmanız onaydır, kapatmanız geri çekmedir),
+      diğer bölgelerde ürünü geliştirmedeki meşru menfaatimize (KVKK m.5/2-f) dayanarak
+      işlenir; ikisinde de anahtarı kapatarak işlemeyi durdurabilirsiniz. Satın alma kayıtları,
+      satın alma sözleşmesinin kurulması ve ifası için (KVKK m.5/2-c, GDPR m.6/1-b) işlenir.</p>
+
+    <h2>Yurt dışına aktarım</h2>
+    <p>Hizmet sağlayıcılarımızın (Google LLC, RevenueCat, Inc.) sunucuları başta ABD olmak üzere
+      yurt dışındadır; yukarıda sayılan veriler bu sağlayıcılara aktarılır. Aktarımlar,
+      sağlayıcılarla yapılan veri işleme sözleşmeleri ve standart sözleşme hükümleri
+      çerçevesinde, şifreli olarak yapılır.</p>
+
+    <h2 id="silme">Saklama ve silme</h2>
+    <p>Çökme raporları 90 gün, kullanım istatistikleri 2 ay sonra kendiliğinden silinir.
+      RevenueCat'teki satın alma kaydı, silinmesini istemediğiniz sürece saklanır; silinmesini
+      isterseniz Google Play sipariş numaranızı (GPA. ile başlar) aşağıdaki adrese yazmanız
+      yeterlidir. Kayıt silinse de Plus'ınızı Google Play'deki satın almanızdan yine geri
+      yükleyebilirsiniz.</p>
+
+    <h2>Haklarınız</h2>
+    <p>KVKK m.11 kapsamında verilerinizin işlenip işlenmediğini öğrenme, bilgi talep etme,
+      düzeltme ve silme isteme, aktarıldığı üçüncü kişileri bilme ve zararın giderilmesini talep
+      etme; GDPR kapsamında ayrıca erişim, taşınabilirlik, itiraz ve denetim makamına şikâyet
+      haklarına sahipsiniz. Başvurularınız en geç 30 gün içinde yanıtlanır. Verileriniz
+      satılmaz; ABD eyalet yasaları anlamında “satış” ya da “paylaşım” yapılmaz.</p>
+
+    <h2>Çocuklar</h2>
+    <p>Decidora 13 yaş altı çocuklara yönelik değildir ve çocuklardan bilerek kişisel veri
+      toplanmaz.</p>
 
     <h2>Değişiklikler</h2>
     <p>Uygulamanın veri davranışı değişirse bu politika, o değişikliği içeren sürüm yayımlanmadan
-      önce bu sayfada güncellenir.</p>
+      önce bu sayfada güncellenir. Bu sürüm, Decidora 2.5 ile gelen çökme raporlarını, kullanım
+      istatistiklerini ve RevenueCat'i anlatır; 2.4 ve önceki sürümler hiçbir veri
+      göndermiyordu.</p>
 
     <h2 id="english">Privacy Policy (English)</h2>
     <p>This policy covers the Decidora: Dice, Coin &amp; Wheel Android app
-      (<code>com.kurapikamih.decidora</code>). <strong>Decidora does not collect, send or share
-      any personal data.</strong> It asks for no account, shows no ads and contains no analytics
-      or crash-reporting tools. The app has no internet permission and cannot connect to any
-      server on its own. Its only permission is Google Play's billing permission, used for
-      buying Decidora Plus.</p>
-    <p>Your decision log, saved wheels and their options, the coin counter and your settings are
-      stored only on your phone, in the app's private storage; we have no access to them. The app
-      is excluded from Android backup, so this data is not copied to Google Drive backups or
-      device-to-device transfers. You can delete the log, saved wheels and the counter in
-      Settings → My data, and uninstalling the app removes all of it.</p>
-    <p>For update checks, the rating card and buying Decidora Plus the app talks to the Google
-      Play Store app on your device. Google Play performs these under Google's own
-      <a href="https://policies.google.com/privacy">privacy policy</a>, and no data reaches us
-      through them. If Android's diagnostics setting is on, Google Play may show us anonymous
-      crash statistics (Android vitals); that is a Google Play service, not part of the app.</p>
-    <p>If you buy Decidora Plus, payment happens in Google Play's own window and your payment
-      details never reach us. The app only asks Google Play for the price and whether you own
-      Plus, and keeps on your phone whether Plus is on and the last price it saw; that is not
-      sent anywhere either. Your purchase history stays in your Google account, in Google
-      Play.</p>
-    <p>If you choose to share a result, the image and text are handed to the app you pick in
-      Android's share menu; Decidora itself sends nothing. When you paste a list into a wheel, the
-      clipboard is read only at that moment and the text stays on your device as wheel options.
-      Website and store links open in your browser or in the Play Store.</p>
-    <p>Decidora collects no personal data from anyone, including children. Developer: <strong>Abdullah
-      Semih Kızılyel (217 Products)</strong>, Türkiye. As the app processes no personal data, we
-      hold no records about you; questions under the KVKK or the GDPR are answered within 30 days
-      at the address below. If the app's data behaviour ever changes, this page is updated before
-      the version containing that change is released.</p>
+      (<code>com.kurapikamih.decidora</code>). <strong>Your decisions, wheels and their options,
+      the coin counter and your settings stay on your device and are never sent anywhere.</strong>
+      Decidora asks for no account, shows no ads and does not use your advertising ID. From
+      version 2.5, two kinds of technical data may be sent so we can fix and improve the app:
+      <strong>crash reports</strong> and <strong>usage statistics</strong>. Both travel under a
+      random ID, contain neither your name nor anything you type, and both can be turned off in
+      <strong>Settings → My data</strong>. If you buy Decidora Plus, a record of the purchase is
+      also kept by our service provider RevenueCat.</p>
+    <p><strong>On your device.</strong> Your decision log, saved wheels and their options, the
+      coin counter and your settings are stored only in the app's private storage; we have no
+      access to them and none of them is added to any report below. The app is excluded from
+      Android backup, so this data is not copied to Google Drive backups or device-to-device
+      transfers. You can delete the log, saved wheels and the counter in Settings → My data;
+      uninstalling the app removes all of it.</p>
+    <p><strong>Crash reports.</strong> When the app crashes, stops responding or hits an error in
+      its code, a technical report is sent via <strong>Google Firebase Crashlytics</strong>: the
+      failing code locations, device model, Android and app version, memory and disk state,
+      screen orientation, which tool was open and Crashlytics' random installation ID. Error
+      messages are filtered before sending to remove anything that could carry text you typed.
+      Your wheel options, saved wheel names and decisions are never included. Reports are sent
+      only from the release version installed from the Play Store and are deleted by Firebase
+      after 90 days. Turn them off any time in Settings → My data → <strong>Crash
+      reports</strong>; unsent reports are then deleted too.</p>
+    <p><strong>Usage statistics.</strong> To understand which tools are used and where people get
+      stuck, technical events are collected via <strong>Google Analytics for Firebase</strong>:
+      which tool was opened and used; the dice type and number of dice; the wheel mode, the
+      <em>number</em> of options and, if it is one of the ready-made wheels, which one (e.g. “what
+      to eat”); the finger picker's mode and number of fingers; opening the Plus page and the
+      outcome of a purchase; sharing a result; the forced-update screen; the rating card; whether
+      the opening animation was watched or skipped. Along with these: the first-open, session and
+      update events the SDK records by itself, the device type (phone or tablet), Android version,
+      app version, language, the country and region derived from the IP address (not the city;
+      the IP address is not stored by Google Analytics) and a random per-installation ID. Your
+      wheel options, your own wheels' names and your results are <strong>never</strong> included:
+      events can only carry fixed values and numbers defined in the code, never free text. The
+      advertising ID and the Android ID are not collected; Google signals and ad personalisation
+      are off and the data is not used for advertising.</p>
+    <p><strong>In the EU, the EEA, the UK and Switzerland</strong> usage statistics are
+      <strong>off by default</strong> and collected only if you turn them on in Settings → My
+      data → <strong>Usage statistics</strong>. We tell this region from the device's SIM card,
+      the network it is connected to and its language/region settings; if any of these points
+      to the region, statistics start off. Elsewhere they are on by default. In every region the
+      same setting turns them off at any time, which stops collection and deletes the measurement
+      ID on your device. Collected only from the release version; deleted by Google Analytics
+      after 2 months.</p>
+    <p><strong>Decidora Plus and RevenueCat.</strong> If you buy Plus, payment happens in Google
+      Play's own window and your payment details never reach us. A record of the purchase is
+      sent to our service provider <strong>RevenueCat</strong> to verify and record purchases, see
+      refunds and prepare revenue reports: a random customer ID, the Google Play purchase token
+      and order number, the product, price and currency, the purchase date, the store country,
+      the app and Android version and the language. While usage statistics are on, opening the
+      app also reports the app version, country and Android version to RevenueCat under the same
+      random ID (to calculate purchase rates); if statistics are off and you don't own Plus,
+      nothing is sent to RevenueCat. Your purchase history also stays in your Google account,
+      in Google Play.</p>
+    <p><strong>Google Play.</strong> For update checks, the rating card and buying Plus the app
+      talks to the Google Play Store app on your device, under Google's own
+      <a href="https://policies.google.com/privacy">privacy policy</a>. If Android's diagnostics
+      setting is on, Google Play may show us anonymous crash statistics (Android vitals).
+      Sharing a result hands the image and text to the app you pick in Android's share menu
+      (statistics only record that you shared, and from which tool). When you paste a list into
+      a wheel, the clipboard is read only at that moment and stays on your device.</p>
+    <p><strong>Purposes and sharing.</strong> We use this data only to diagnose and fix crashes
+      and errors, understand which tools and steps are used to improve the app, record purchases
+      and answer support requests. It is shared only with providers acting on our behalf: Google
+      Firebase Crashlytics and Google Analytics for Firebase (Google LLC) and RevenueCat
+      (RevenueCat, Inc.). We do not sell it, use it for advertising or build profiles. All
+      transfers are encrypted (TLS).</p>
+    <p><strong>Controller, legal bases and transfers.</strong> Data controller under the KVKK
+      (Türkiye) and the GDPR: <strong>Abdullah Semih Kızılyel (217 Products)</strong>, Türkiye.
+      Crash reports rely on our legitimate interest in running the app safely and reliably
+      (GDPR Art. 6(1)(f)); usage statistics rely on your consent in the EU, EEA, UK and
+      Switzerland (Art. 6(1)(a) — turning the setting on is consent, turning it off withdraws
+      it) and on our legitimate interest in improving the product elsewhere; you can stop both
+      with their settings. Purchase records are needed to perform the purchase (Art. 6(1)(b)).
+      Our providers process data primarily in the United States under data-processing
+      agreements and standard contractual clauses.</p>
+    <p><strong>Retention and your rights.</strong> Crash reports are deleted after 90 days and
+      usage statistics after 2 months. The RevenueCat purchase record is kept until you ask us
+      to delete it — just send your Google Play order number (it starts with GPA.); you can still
+      restore Plus from your Google Play purchase afterwards. You have the rights of access,
+      rectification, erasure, portability, objection and complaint to a supervisory authority;
+      requests to the address below are answered within 30 days. We do not sell or “share” your
+      data. Decidora is not directed at children under 13. If the app's data behaviour changes,
+      this page is updated before the version containing that change is released; this version
+      describes the crash reports, usage statistics and RevenueCat added in Decidora 2.5 —
+      version 2.4 and earlier sent no data at all.</p>
 
     <h2>İletişim / Contact</h2>
     <p><a href="mailto:destek217product@gmail.com">destek217product@gmail.com</a> ·
@@ -115,7 +264,7 @@
       <a href="/decidora/tr">Decidora</a>
       <a href="/kosullar">Kullanım koşulları / Terms</a>
     </nav>
-    <p class="doc-date">Son güncelleme / Last updated: 10 Ekim 2026</p>
+    <p class="doc-date">Son güncelleme / Last updated: 18 Ekim 2026</p>
   </main>
 </body>
 </html>
