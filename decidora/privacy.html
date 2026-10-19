@@ -51,8 +51,9 @@
       bir hata oluştuğunda, sorunu bulup düzeltebilmemiz için teknik bir rapor
       <strong>Google Firebase Crashlytics</strong> aracılığıyla bize iletilir. Rapor hatanın
       oluştuğu kod satırlarını, cihaz modelini, Android ve uygulama sürümünü, bellek ve disk
-      durumunu, ekran yönünü, o an hangi aracın açık olduğunu ve Crashlytics'in rastgele kurulum
-      kimliğini içerir. Hata mesajları gönderilmeden önce süzülür: kullanıcının yazdığı metni
+      durumunu, ekran yönünü, o an hangi aracın açık olduğunu, uygulamanın dilini, Plus'ın açık
+      olup olmadığını, giriş yapılıp yapılmadığını, hatadan önceki son adımların adlarını (ör.
+      “zar atıldı”, “ayarlar açıldı”) ve Crashlytics'in rastgele kurulum kimliğini içerir. Hata mesajları gönderilmeden önce süzülür: kullanıcının yazdığı metni
       taşıyabilecek kısımlar çıkarılır. Çark seçenekleriniz, kayıtlı çarklarınızın adları ve
       kararlarınız bu raporlara asla eklenmez.</p>
     <p>Raporlar yalnızca Play Store'dan indirdiğiniz yayın sürümünde gönderilir ve Firebase
@@ -67,7 +68,9 @@
       <em>sayısı</em> ve çark hazır çarklardan biriyse hangisi olduğu (ör. “ne yesek”);
       parmak seçicide kip ve parmak sayısı; Plus sayfasının açılması ve satın almanın sonucu;
       sonuç paylaşımı; zorunlu güncelleme ekranı; puan kartı; açılış gösterisinin izlenip
-      izlenmediği. Bunlarla birlikte uygulamanın kendiliğinden saydığı ilk açılış, oturum ve
+      izlenmediği; çarkta kaydetme, eleme ve baştan alma gibi işlemler; Google ile giriş, çıkış ve
+      hesap silmenin sonucu (ör. tamamlandı, vazgeçildi, internet yok), nereden başlatıldığı ve
+      giriş yapılıp yapılmadığı. Bunlarla birlikte uygulamanın kendiliğinden saydığı ilk açılış, oturum ve
       güncelleme olayları; cihaz türü (telefon ya da tablet), Android sürümü, uygulama sürümü,
       dil, IP adresinden çıkarılan ülke ve bölge (şehir değil; IP adresi Google Analytics'te
       saklanmaz) ve uygulamaya özel rastgele bir kurulum kimliği işlenir.</p>
@@ -96,7 +99,10 @@
       dil. Kullanım istatistikleri açıksa uygulama açıldığında da RevenueCat'e aynı rastgele
       kimlikle uygulama sürümü, ülke ve Android sürümü bildirilir (satın alma oranını
       hesaplamak için); istatistikler kapalıysa ve Plus'ınız yoksa RevenueCat'e hiçbir şey
-      gitmez. Satın alma geçmişiniz ayrıca Google hesabınızda, Google Play'de durur.</p>
+      gitmez. Plus'ı giriş yapmadan aldıysanız RevenueCat, satın almanızı uygulama yeniden
+      kurulduğunda tanıyabilmek için bu rastgele kimliği Google'ın Block Store hizmetinde, Google
+      hesabınızın şifreli yedeğinde saklayabilir; bu kimlik adınızı, e-postanızı ya da
+      kararlarınızı içermez. Satın alma geçmişiniz ayrıca Google hesabınızda, Google Play'de durur.</p>
 
     <h2 id="hesap">Google ile giriş (hesap)</h2>
     <p>Decidora'nın araçları giriş yapmadan çalışır. Plus'ı satın alırken (ya da istediğiniz
@@ -214,7 +220,9 @@
     <p><strong>Crash reports.</strong> When the app crashes, stops responding or hits an error in
       its code, a technical report is sent via <strong>Google Firebase Crashlytics</strong>: the
       failing code locations, device model, Android and app version, memory and disk state,
-      screen orientation, which tool was open and Crashlytics' random installation ID. Error
+      screen orientation, which tool was open, the app language, whether Plus is active and
+      whether you are signed in, the names of the last steps before the error (e.g. “dice
+      rolled”, “settings opened”) and Crashlytics' random installation ID. Error
       messages are filtered before sending to remove anything that could carry text you typed.
       Your wheel options, saved wheel names and decisions are never included. Reports are sent
       only from the release version installed from the Play Store and are deleted by Firebase
@@ -226,7 +234,10 @@
       <em>number</em> of options and, if it is one of the ready-made wheels, which one (e.g. “what
       to eat”); the finger picker's mode and number of fingers; opening the Plus page and the
       outcome of a purchase; sharing a result; the forced-update screen; the rating card; whether
-      the opening animation was watched or skipped. Along with these: the first-open, session and
+      the opening animation was watched or skipped; wheel actions such as saving, elimination and
+      starting over; the outcome of signing in, signing out and deleting the account (e.g.
+      completed, cancelled, no internet), where it was started and whether you are signed in.
+      Along with these: the first-open, session and
       update events the SDK records by itself, the device type (phone or tablet), Android version,
       app version, language, the country and region derived from the IP address (not the city;
       the IP address is not stored by Google Analytics) and a random per-installation ID. Your
@@ -250,7 +261,10 @@
       the app and Android version and the language. While usage statistics are on, opening the
       app also reports the app version, country and Android version to RevenueCat under the same
       random ID (to calculate purchase rates); if statistics are off and you don't own Plus,
-      nothing is sent to RevenueCat. Your purchase history also stays in your Google account,
+      nothing is sent to RevenueCat. If you bought Plus without signing in, RevenueCat may keep
+      this random ID in Google's Block Store, in your Google account's encrypted backup, so it
+      can recognise your purchase when the app is reinstalled; the ID contains no name, email or
+      decisions. Your purchase history also stays in your Google account,
       in Google Play.</p>
     <p id="account"><strong>Sign-in with Google (account).</strong> Decidora's tools work without
       signing in. When you buy Plus (or any time from the account icon in the top bar or Settings
@@ -316,7 +330,7 @@
       <a href="/decidora/tr">Decidora</a>
       <a href="/kosullar">Kullanım koşulları / Terms</a>
     </nav>
-    <p class="doc-date">Son güncelleme / Last updated: 19 Ekim 2026</p>
+    <p class="doc-date">Son güncelleme / Last updated: 20 Ekim 2026</p>
   </main>
 </body>
 </html>
