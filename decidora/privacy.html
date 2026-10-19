@@ -96,7 +96,9 @@
       raporlarını hazırlamak için hizmet sağlayıcımız <strong>RevenueCat</strong>'e de iletilir:
       rastgele bir müşteri kimliği, Google Play satın alma belirteci ve sipariş numarası, ürün,
       fiyat ve para birimi, satın alma tarihi, mağaza ülkesi, uygulama ve Android sürümü ile
-      dil. Kullanım istatistikleri açıksa uygulama açıldığında da RevenueCat'e aynı rastgele
+      dil. Plus'a sahipseniz ve Google ile giriş yaptıysanız, destek taleplerinde sizi
+      bulabilmemiz için bu kayda Google hesabınızın adı ve e-posta adresi de eklenir (aşağıda
+      “Google ile giriş”). Kullanım istatistikleri açıksa uygulama açıldığında da RevenueCat'e aynı rastgele
       kimlikle uygulama sürümü, ülke ve Android sürümü bildirilir (satın alma oranını
       hesaplamak için); istatistikler kapalıysa ve Plus'ınız yoksa RevenueCat'e hiçbir şey
       gitmez. Plus'ı giriş yapmadan aldıysanız RevenueCat, satın almanızı uygulama yeniden
@@ -112,14 +114,15 @@
       hesabınızdaki ad, e-posta adresi ve profil fotoğrafının bağlantısı ile size verilen hesap
       kimliği (UID) <strong>Google Firebase Authentication</strong>'da tutulur; hesabın
       oluşturulma ve son giriş tarihi gibi teknik kayıtları Firebase kendisi tutar.</p>
-    <p>Ad ve e-posta yalnızca uygulamada size gösterilmek için cihazınıza gelir; çökme
-      raporlarına ve kullanım istatistiklerine eklenmez. RevenueCat'e adınız ve e-postanız
-      gitmez: giriş yaptıysanız satın alma kaydınız rastgele kimlik yerine hesap kimliğinizle
-      (UID) eşleştirilir. Kararlarınız, çarklarınız ve ayarlarınız hesaba bağlanmaz,
+    <p>Ad ve e-posta uygulamada size gösterilir; çökme raporlarına ve kullanım istatistiklerine
+      eklenmez. Giriş yaptıysanız RevenueCat'teki satın alma kaydınız rastgele kimlik yerine hesap
+      kimliğinizle (UID) eşleştirilir; Plus'a sahipseniz kayda adınız ve e-posta adresiniz de
+      eklenir (destek için). Plus'ınız yoksa adınız ve e-postanız RevenueCat'e gitmez. Kararlarınız, çarklarınız ve ayarlarınız hesaba bağlanmaz,
       cihazınızda kalır.</p>
     <p>Hesabınızı uygulamanın içinden silebilirsiniz: üst banttaki hesap simgesi ya da
       Ayarlar → Hesap → <strong>Hesabı sil</strong>. Silindiğinde Firebase'deki ad, e-posta
-      adresi, fotoğraf bağlantısı ve hesap kimliği kalıcı olarak silinir. Uygulama artık
+      adresi, fotoğraf bağlantısı ve hesap kimliği kalıcı olarak silinir; RevenueCat'teki satın
+      alma kaydına eklenmiş ad ve e-posta adresi de silinir. Uygulama artık
       cihazınızda değilse <a href="/decidora/hesap-silme.html">hesap silme sayfasındaki</a>
       yolla isteyebilirsiniz. Plus, Google Play'deki satın almanız olarak kalır ve aynı Google
       Play hesabıyla geri yüklenebilir.</p>
@@ -258,7 +261,10 @@
       sent to our service provider <strong>RevenueCat</strong> to verify and record purchases, see
       refunds and prepare revenue reports: a random customer ID, the Google Play purchase token
       and order number, the product, price and currency, the purchase date, the store country,
-      the app and Android version and the language. While usage statistics are on, opening the
+      the app and Android version and the language. If you own Plus and are signed in with
+      Google, your Google account's name and email address are added to this record so we can
+      find you when you contact support (see “Sign-in with Google” below). While usage
+      statistics are on, opening the
       app also reports the app version, country and Android version to RevenueCat under the same
       random ID (to calculate purchase rates); if statistics are off and you don't own Plus,
       nothing is sent to RevenueCat. If you bought Plus without signing in, RevenueCat may keep
@@ -273,13 +279,15 @@
       When you sign in, the name, email address and profile photo link of your Google account and
       the account ID (UID) assigned to you are kept in <strong>Google Firebase
       Authentication</strong>, which also keeps technical records such as when the account was
-      created and last signed in. The name and email come to your device only to be shown to you
-      in the app; they are never added to crash reports or usage statistics. Your name and email
-      are not sent to RevenueCat: if you are signed in, your purchase record is matched to your
-      account ID (UID) instead of a random ID. Your decisions, wheels and settings are not tied to
+      created and last signed in. The name and email are shown to you in the app; they are never
+      added to crash reports or usage statistics. If you are signed in, your purchase record at
+      RevenueCat is matched to your account ID (UID) instead of a random ID, and if you own Plus
+      your name and email address are added to it (for support). Without Plus, your name and
+      email are not sent to RevenueCat. Your decisions, wheels and settings are not tied to
       the account and stay on your device. You can delete your account inside the app: the
       account icon in the top bar, or Settings → Account → <strong>Delete account</strong>. This
-      permanently deletes the name, email address, photo link and account ID from Firebase. If the
+      permanently deletes the name, email address, photo link and account ID from Firebase, and
+      the name and email address added to your purchase record at RevenueCat. If the
       app is no longer on your device, use the <a href="/decidora/hesap-silme.html#english">account
       deletion page</a>. Plus remains your Google Play purchase and can be restored with the same
       Google Play account.</p>
