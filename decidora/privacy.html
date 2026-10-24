@@ -26,10 +26,10 @@
       <a href="#english">below</a>.</p>
 
     <h2>Kısaca</h2>
-    <p>Kararlarınız, çarklarınız ve seçenekleri, sayacınız ve ayarlarınız <strong>yalnızca
+    <p>Kararlarınız ve sonuçları, çarklarınız ve seçenekleri ve yazı tura sayacınız <strong>yalnızca
       cihazınızda kalır ve hiçbir yere gönderilmez.</strong> Decidora reklam göstermez, reklam
       kimliğinizi kullanmaz ve hesap olmadan çalışır; Decidora Plus'ı satın alırken, Plus
-      kaybolmasın diye isteğe bağlı olarak Google hesabınızla giriş yaparsınız (aşağıda
+      kaybolmasın diye isteğe bağlı olarak Google hesabınızla giriş yapabilirsiniz (aşağıda
       <a href="#hesap">Google ile giriş</a>). 2.5 sürümünden itibaren, uygulamayı düzeltip
       geliştirebilmemiz için iki tür teknik veri gönderilebilir: <strong>çökme raporları</strong>
       ve <strong>kullanım istatistikleri</strong>. İkisi de rastgele bir kimlikle gider, adınızı
@@ -40,7 +40,8 @@
     <h2>Cihazınızda kalanlar</h2>
     <p>Karar defteriniz, kaydettiğiniz çarklar ve seçenekleri, yazı tura sayacı ve ayarlarınız
       yalnızca cihazınızda, uygulamanın kendi depolama alanında tutulur. Bu verilere bizim
-      erişimimiz yoktur ve aşağıdaki raporların hiçbirine eklenmezler. Uygulama Android
+      erişimimiz yoktur ve aşağıdaki raporların hiçbirine eklenmezler; ayarlarınızdan yalnızca
+      uygulamanın dili aşağıdaki raporlarda yer alır. Uygulama Android
       yedeklemesinin <strong>dışında</strong> tutulur: veriler Google Drive yedeğine veya
       cihazdan cihaza aktarıma dahil edilmez. Defteri, kayıtlı çarkları ve sayacı uygulama
       içinden Ayarlar → Verilerim bölümünde silebilirsiniz; uygulamayı kaldırdığınızda hepsi
@@ -56,6 +57,11 @@
       “zar atıldı”, “ayarlar açıldı”) ve Crashlytics'in rastgele kurulum kimliğini içerir. Hata mesajları gönderilmeden önce süzülür: kullanıcının yazdığı metni
       taşıyabilecek kısımlar çıkarılır. Çark seçenekleriniz, kayıtlı çarklarınızın adları ve
       kararlarınız bu raporlara asla eklenmez.</p>
+    <p>Çökme raporları açıkken, çökmesiz kullanım oranını hesaplayabilmemiz için uygulama her
+      açıldığında (ya da yarım saatten uzun bir aradan sonra yeniden öne geldiğinde) Crashlytics'e
+      bir oturum kaydı da gider: uygulamanın ve Android'in sürümü, cihazın üreticisi ve modeli,
+      bağlantı türü (ör. Wi-Fi ya da mobil veri) ve oturumun başladığı an. Bu kayıt da
+      kullanıcıya ait hiçbir içerik taşımaz.</p>
     <p>Raporlar yalnızca Play Store'dan indirdiğiniz yayın sürümünde gönderilir ve Firebase
       tarafında 90 gün saklandıktan sonra silinir. Ayarlar → Verilerim →
       <strong>Çökme raporları</strong> ile istediğiniz zaman kapatabilirsiniz; kapattığınızda
@@ -64,13 +70,16 @@
     <h2>Kullanım istatistikleri</h2>
     <p>Hangi araçların kullanıldığını ve nerede zorlanıldığını anlamak için teknik olaylar
       <strong>Google Analytics for Firebase</strong> aracılığıyla toplanır: hangi aracın
-      açıldığı ve kullanıldığı; zarda kalıp ve zar sayısı; çarkta kip, seçenek
-      <em>sayısı</em> ve çark hazır çarklardan biriyse hangisi olduğu (ör. “ne yesek”);
-      parmak seçicide kip ve parmak sayısı; Plus sayfasının açılması ve satın almanın sonucu;
-      sonuç paylaşımı; zorunlu güncelleme ekranı; puan kartı; açılış gösterisinin izlenip
+      açıldığı ve kullanıldığı; zarda kalıp, zar sayısı ve ek eklenip eklenmediği; çarkta kip,
+      seçenek <em>sayısı</em>, takım sayısı ve çark hazır çarklardan biriyse hangisi olduğu
+      (ör. “ne yesek”); parmak seçicide kip, parmak sayısı ve seçilen kişi ya da takım sayısı;
+      Plus sayfasının ve Plus davetinin gösterilmesi, nedeni (ör. hangi kilide dokunulduğu) ve
+      nereden açıldığı; “Plus'ı al”a basılması ve o an indirim olup olmadığı; satın almanın ve
+      geri yüklemenin sonucu; sonuç paylaşımı ve hangi araçtan yapıldığı; zorunlu güncelleme
+      ekranı; puan kartının istenmesi ve nereden istendiği; açılış gösterisinin izlenip
       izlenmediği; çarkta kaydetme, eleme ve baştan alma gibi işlemler; Google ile giriş, çıkış ve
-      hesap silmenin sonucu (ör. tamamlandı, vazgeçildi, internet yok), nereden başlatıldığı ve
-      giriş yapılıp yapılmadığı. Bunlarla birlikte uygulamanın kendiliğinden saydığı ilk açılış, oturum ve
+      hesap silmenin sonucu (ör. tamamlandı, vazgeçildi, internet yok) ve nereden başlatıldığı;
+      uygulamanın dili, Plus'ın açık olup olmadığı ve giriş yapılıp yapılmadığı. Bunlarla birlikte uygulamanın kendiliğinden saydığı ilk açılış, oturum ve
       güncelleme olayları; cihaz türü (telefon ya da tablet), Android sürümü, uygulama sürümü,
       dil, IP adresinden çıkarılan ülke ve bölge (şehir değil; IP adresi Google Analytics'te
       saklanmaz) ve uygulamaya özel rastgele bir kurulum kimliği işlenir.</p>
@@ -98,10 +107,12 @@
       fiyat ve para birimi, satın alma tarihi, mağaza ülkesi, uygulama ve Android sürümü ile
       dil. Plus'a sahipseniz ve Google ile giriş yaptıysanız, destek taleplerinde sizi
       bulabilmemiz için bu kayda Google hesabınızın adı ve e-posta adresi de eklenir (aşağıda
-      “Google ile giriş”). Kullanım istatistikleri açıksa uygulama açıldığında da RevenueCat'e aynı rastgele
-      kimlikle uygulama sürümü, ülke ve Android sürümü bildirilir (satın alma oranını
-      hesaplamak için); istatistikler kapalıysa ve Plus'ınız yoksa RevenueCat'e hiçbir şey
-      gitmez. Plus'ı giriş yapmadan aldıysanız RevenueCat, satın almanızı uygulama yeniden
+      “Google ile giriş”). Kullanım istatistikleri açıksa uygulama açıldığında da RevenueCat'e aynı
+      müşteri kimliğiyle (giriş yaptıysanız hesap kimliğinizle) uygulama sürümü, ülke ve Android
+      sürümü bildirilir (satın alma oranını hesaplamak için); istatistikler kapalıysa ve
+      Plus'ınız yoksa RevenueCat'e hiçbir şey gitmez — tek istisna, daha önce kayda eklenmiş
+      adınızı ve e-postanızı hesabınızı silerken RevenueCat'ten silmek için yapılan
+      bağlantıdır. Plus'ı giriş yapmadan aldıysanız RevenueCat, satın almanızı uygulama yeniden
       kurulduğunda tanıyabilmek için bu rastgele kimliği Google'ın Block Store hizmetinde, Google
       hesabınızın şifreli yedeğinde saklayabilir; bu kimlik adınızı, e-postanızı ya da
       kararlarınızı içermez. Satın alma geçmişiniz ayrıca Google hesabınızda, Google Play'de durur.</p>
@@ -204,10 +215,11 @@
 
     <h2 id="english">Privacy Policy (English)</h2>
     <p>This policy covers the Decidora: Dice, Coin &amp; Wheel Android app
-      (<code>com.kurapikamih.decidora</code>). <strong>Your decisions, wheels and their options,
-      the coin counter and your settings stay on your device and are never sent anywhere.</strong>
+      (<code>com.kurapikamih.decidora</code>). <strong>Your decisions and their results, your
+      wheels and their options and the coin counter stay on your device and are never sent
+      anywhere.</strong>
       Decidora shows no ads, does not use your advertising ID and works without an account; when
-      you buy Decidora Plus you can sign in with your Google account so Plus is never lost (see
+      you buy Decidora Plus you can optionally sign in with your Google account so Plus is never lost (see
       <a href="#account">Sign-in with Google</a> below). From
       version 2.5, two kinds of technical data may be sent so we can fix and improve the app:
       <strong>crash reports</strong> and <strong>usage statistics</strong>. Both travel under a
@@ -216,7 +228,8 @@
       also kept by our service provider RevenueCat.</p>
     <p><strong>On your device.</strong> Your decision log, saved wheels and their options, the
       coin counter and your settings are stored only in the app's private storage; we have no
-      access to them and none of them is added to any report below. The app is excluded from
+      access to them and none of them is added to any report below, except that the app
+      language appears in the reports. The app is excluded from
       Android backup, so this data is not copied to Google Drive backups or device-to-device
       transfers. You can delete the log, saved wheels and the counter in Settings → My data;
       uninstalling the app removes all of it.</p>
@@ -227,19 +240,28 @@
       whether you are signed in, the names of the last steps before the error (e.g. “dice
       rolled”, “settings opened”) and Crashlytics' random installation ID. Error
       messages are filtered before sending to remove anything that could carry text you typed.
-      Your wheel options, saved wheel names and decisions are never included. Reports are sent
+      Your wheel options, saved wheel names and decisions are never included. While crash
+      reports are on, each time the app opens (or comes back after more than half an hour in
+      the background) a session record is also sent to Crashlytics so we can calculate the share
+      of crash-free use: the app and Android version, the device maker and model, the
+      connection type (e.g. Wi-Fi or mobile data) and when the session started; it carries no
+      content of yours either. Reports are sent
       only from the release version installed from the Play Store and are deleted by Firebase
       after 90 days. Turn them off any time in Settings → My data → <strong>Crash
       reports</strong>; unsent reports are then deleted too.</p>
     <p><strong>Usage statistics.</strong> To understand which tools are used and where people get
       stuck, technical events are collected via <strong>Google Analytics for Firebase</strong>:
-      which tool was opened and used; the dice type and number of dice; the wheel mode, the
-      <em>number</em> of options and, if it is one of the ready-made wheels, which one (e.g. “what
-      to eat”); the finger picker's mode and number of fingers; opening the Plus page and the
-      outcome of a purchase; sharing a result; the forced-update screen; the rating card; whether
-      the opening animation was watched or skipped; wheel actions such as saving, elimination and
-      starting over; the outcome of signing in, signing out and deleting the account (e.g.
-      completed, cancelled, no internet), where it was started and whether you are signed in.
+      which tool was opened and used; the dice type, the number of dice and whether a modifier
+      was added; the wheel mode, the <em>number</em> of options, the number of teams and, if it
+      is one of the ready-made wheels, which one (e.g. “what to eat”); the finger picker's mode,
+      number of fingers and the number of people or teams picked; showing the Plus page and the
+      Plus invitation, why (e.g. which lock was tapped) and where it was opened from; tapping
+      “Get Plus” and whether a discount was on at that moment; the outcome of a purchase and of
+      a restore; sharing a result and from which tool; the forced-update screen; requesting the
+      rating card and from where; whether the opening animation was watched or skipped; wheel
+      actions such as saving, elimination and starting over; the outcome of signing in, signing
+      out and deleting the account (e.g. completed, cancelled, no internet) and where it was
+      started; the app language, whether Plus is active and whether you are signed in.
       Along with these: the first-open, session and
       update events the SDK records by itself, the device type (phone or tablet), Android version,
       app version, language, the country and region derived from the IP address (not the city;
@@ -266,8 +288,10 @@
       find you when you contact support (see “Sign-in with Google” below). While usage
       statistics are on, opening the
       app also reports the app version, country and Android version to RevenueCat under the same
-      random ID (to calculate purchase rates); if statistics are off and you don't own Plus,
-      nothing is sent to RevenueCat. If you bought Plus without signing in, RevenueCat may keep
+      customer ID (your account ID if you are signed in) to calculate purchase rates; if
+      statistics are off and you don't own Plus, nothing is sent to RevenueCat — the only
+      exception is the connection made to delete a name and email address previously added to
+      the record when you delete your account. If you bought Plus without signing in, RevenueCat may keep
       this random ID in Google's Block Store, in your Google account's encrypted backup, so it
       can recognise your purchase when the app is reinstalled; the ID contains no name, email or
       decisions. Your purchase history also stays in your Google account,
@@ -338,7 +362,7 @@
       <a href="/decidora/tr">Decidora</a>
       <a href="/kosullar">Kullanım koşulları / Terms</a>
     </nav>
-    <p class="doc-date">Son güncelleme / Last updated: 20 Ekim 2026</p>
+    <p class="doc-date">Son güncelleme / Last updated: 24 Ekim 2026</p>
   </main>
 </body>
 </html>
