@@ -69,19 +69,29 @@
       toplamayı istediğiniz zaman kapatabilirsiniz; kapattığınızda toplama durur ve cihazınızdaki
       ölçüm kimliği silinir. Veriler yalnızca Play Store'dan indirdiğiniz yayın sürümünde toplanır
       ve Firebase tarafında en fazla 14 ay saklanır.</p>
+    <p><strong>Uzaktan ayar:</strong> Uygulama, bazı teknik özellikleri (örneğin hızlı çizim
+      katmanını) bir güncelleme beklemeden kapatabilmemiz için Google Firebase Remote Config'ten
+      birkaç açma-kapama ayarı indirir. Bu istek sırasında uygulamaya özel rastgele bir kurulum
+      kimliği, ülke ve dil kodu, saat dilimi, Android sürümü ve uygulama sürümü Google'a
+      iletilir. Kullanım analitiği açıksa, analitiğin tuttuğu ilk açılış zamanı ve uygulama içi
+      tercih etiketleri (örneğin Pro durumu, tema, kalem kullanımı) de bu isteğe eklenebilir.
+      <strong>Notlarınızın içeriği, çizimleriniz, defter adlarınız, e-posta adresiniz veya
+      kullanıcı kimliğiniz bu isteğe asla eklenmez.</strong> Bu ayarlar reklam ya da
+      kişiselleştirme için kullanılmaz.</p>
 
     <h2>Kullanım amaçları</h2>
     <p>Bu bilgileri yalnızca şunlar için kullanırız: hesabınızı yönetmek, satın alımlarınızı
       doğrulamak ve cihazlar arasında taşımak, reklam göstermek, çökme ve hataları teşhis edip
-      düzeltmek, uygulamanın hangi adımlarının zorlayıcı olduğunu anlayıp ürünü geliştirmek ve
-      destek taleplerinize yanıt vermek. Verileriniz üçüncü taraflara satılmaz ve reklam hedefleme
+      düzeltmek, sorun çıkaran bir teknik özelliği uzaktan kapatabilmek, uygulamanın hangi
+      adımlarının zorlayıcı olduğunu anlayıp ürünü geliştirmek ve destek taleplerinize yanıt
+      vermek. Verileriniz üçüncü taraflara satılmaz ve reklam hedefleme
       amacıyla profilleme yapılmaz.</p>
 
     <h2>Paylaşım</h2>
     <p>Veriler yalnızca, bizim adımıza hizmet veren sağlayıcılarla paylaşılır: Google Firebase
       (kimlik doğrulama), Google Firebase Crashlytics (çökme ve tanılama raporları), Google
-      Firebase Analytics (kullanım analitiği), RevenueCat (satın alma yönetimi ve destek) ve
-      Google AdMob (reklam). Tüm aktarımlar şifrelenir (TLS).</p>
+      Firebase Analytics (kullanım analitiği), Google Firebase Remote Config (uzaktan ayar),
+      RevenueCat (satın alma yönetimi ve destek) ve Google AdMob (reklam). Tüm aktarımlar şifrelenir (TLS).</p>
 
     <h2>Saklama ve silme</h2>
     <p>Hesap bilgileriniz, hesabınız silinene kadar saklanır. Hesabınızı ve ilişkili verilerinizi
@@ -101,9 +111,9 @@
 
     <h2>İşlemenin hukuki sebepleri</h2>
     <p>Hesap bilgileri ve satın alma kayıtları, üyelik ve satın alma sözleşmesinin kurulması ve
-      ifası için (KVKK m.5/2-c, GDPR m.6/1-b); çökme ve tanılama verileri, uygulamanın güvenli ve
-      kararlı çalıştırılmasındaki meşru menfaatimiz için (KVKK m.5/2-f, GDPR m.6/1-f — istediğiniz
-      zaman kapatabilirsiniz); kullanım analitiği ve reklam kişiselleştirme, onayınıza/açık
+      ifası için (KVKK m.5/2-c, GDPR m.6/1-b); çökme ve tanılama verileri ile uzaktan ayar isteği,
+      uygulamanın güvenli ve kararlı çalıştırılmasındaki meşru menfaatimiz için (KVKK m.5/2-f,
+      GDPR m.6/1-f — çökme raporlarını istediğiniz zaman kapatabilirsiniz); kullanım analitiği ve reklam kişiselleştirme, onayınıza/açık
       rızanıza dayanarak (KVKK m.5/1, GDPR m.6/1-a — istediğiniz zaman geri çekebilirsiniz)
       işlenir.</p>
 
@@ -153,9 +163,16 @@
       when you use the app. In every region you can turn it off via Settings → Privacy →
       <strong>Usage analytics</strong>, which stops collection and deletes the measurement
       identifier. Retained for at most 14 months.</p>
+    <p>So that we can switch off a technical feature (for example the fast ink layer) without
+      waiting for an update, the app downloads a few on/off settings from Google Firebase Remote
+      Config. That request carries a random per-installation identifier, country and language
+      code, time zone, Android version and app version; if usage analytics is on, the analytics
+      first-open time and in-app preference labels (for example Pro status, theme, pen use) may
+      be attached as well. <strong>Never note content, drawings, notebook names, email or user
+      ID.</strong> These settings are not used for advertising or personalisation.</p>
     <p>Data controller under KVKK (Türkiye) and the GDPR: <strong>Abdullah Semih Kızılyel
       (217 Products)</strong>, Türkiye. Legal bases: contract (account, purchases), legitimate
-      interest (crash diagnostics — can be turned off), consent (analytics, ad personalisation —
+      interest (crash diagnostics — can be turned off; remote settings), consent (analytics, ad personalisation —
       can be withdrawn). Our providers (Google LLC, RevenueCat Inc.) process data primarily in
       the United States under data-processing agreements and standard contractual clauses. You
       have the rights of access, rectification, erasure, portability, objection and complaint to
@@ -174,7 +191,7 @@
       <a href="/osnote/hesap-silme.html">Hesap silme / Account deletion</a>
       <a href="/kosullar">Kullanım koşulları / Terms</a>
     </nav>
-    <p class="doc-date">Son güncelleme / Last updated: 19 Ağustos 2026</p>
+    <p class="doc-date">Son güncelleme / Last updated: 14 Kasım 2026</p>
   </main>
 </body>
 </html>
